@@ -21,7 +21,7 @@ export default function Footer() {
                 { icon: Linkedin, href: '#' },
                 { icon: Twitter, href: '#' },
                 { icon: Github, href: '#' },
-                { icon: Mail, href: 'mailto:sarah@example.com' }
+                { icon: Mail, href: 'mailto:Vikram@example.com' }
               ].map((social, index) => (
                 <a
                   key={index}
@@ -54,7 +54,7 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-lg mb-4">Get In Touch</h3>
             <div className="space-y-3 text-gray-400">
-              <p>sarah@example.com</p>
+              <p>Vikram@example.com</p>
               <p>+1 (555) 123-4567</p>
               <p>San Francisco, CA</p>
             </div>

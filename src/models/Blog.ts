@@ -24,7 +24,7 @@ const BlogSchema: Schema = new Schema(
     title: { type: String, required: true },
     excerpt: { type: String, required: true },
     content: { type: String, required: true },
-    author: { type: String, required: true, default: 'Sarah Chen' },
+    author: { type: String, required: true, default: 'Vikram' },
     date: { type: String, required: true },
     readTime: { type: String, required: true },
     category: { type: String, required: true },

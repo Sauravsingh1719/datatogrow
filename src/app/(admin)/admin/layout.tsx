@@ -130,7 +130,7 @@ export default function AdminLayout({
             
             <div className="flex items-center gap-4">
               <div className="text-right hidden sm:block">
-                <div className="font-medium text-gray-900">Sarah Chen</div>
+                <div className="font-medium text-gray-900">Vikram</div>
                 <div className="text-sm text-gray-500">Administrator</div>
               </div>
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center text-white font-semibold">

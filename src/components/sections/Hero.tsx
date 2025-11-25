@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 
 export default function Hero() {
   return (
-    <section id="home" className="min-h-screen relative flex items-center justify-center overflow-hidden">
+    <section id="home" className="min-h-screen pt-10 relative flex items-center justify-center overflow-hidden">
       {}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,64,255,0.05)_50%,transparent_75%,transparent_100%)] bg-[length:250px_250px] animate-pulse-slow" />
@@ -76,7 +76,7 @@ export default function Hero() {
 
           {}
           <motion.h1 
-            className="text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 mb-6 leading-tight"
+            className="text-5xl md:text-7xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -90,7 +90,7 @@ export default function Hero() {
           
           {}
           <motion.p 
-            className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed"
+            className="text-xl md:text-xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}

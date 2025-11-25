@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       featured: featured || false,
       published: published || false,
       date: new Date().toISOString().split('T')[0],
-      author: 'Sarah Chen'
+      author: 'Vikram'
     });
 
     await blog.save();

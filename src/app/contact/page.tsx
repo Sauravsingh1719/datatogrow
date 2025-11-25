@@ -113,8 +113,8 @@ export default function ContactPage() {
                     {
                       icon: Mail,
                       title: 'Email',
-                      content: 'sarah@example.com',
-                      link: 'mailto:sarah@example.com',
+                      content: 'Vikram@example.com',
+                      link: 'mailto:Vikram@example.com',
                       description: 'Send me an email anytime'
                     },
                     {

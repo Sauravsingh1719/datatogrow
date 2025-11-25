@@ -167,7 +167,7 @@ export default function AdminDashboard() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-8 text-white"
       >
-        <h1 className="text-3xl font-bold mb-2">Welcome back, Sarah!</h1>
+        <h1 className="text-3xl font-bold mb-2">Welcome back, Vikram!</h1>
         <p className="text-blue-100 text-lg">
           Here's what's happening with your portfolio today.
         </p>

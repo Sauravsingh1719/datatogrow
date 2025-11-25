@@ -1,9 +1,8 @@
 // app/layout.tsx
 import './globals.css'
 import { Inter } from 'next/font/google'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
 import WelcomeWrapper from '@/components/WelcomeWrapper'
+import LayoutContent from '@/components/LayoutContent' // Import the new component
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,17 +16,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const isAdminRoute = false
-
   return (
     <html lang="en" className="scroll-smooth">
       <body className={inter.className}>
         <WelcomeWrapper>
-          {!isAdminRoute && <Navigation />}
-          <main className="relative">
+          <LayoutContent>
             {children}
-          </main>
-          {!isAdminRoute && <Footer />}
+          </LayoutContent>
         </WelcomeWrapper>
       </body>
     </html>

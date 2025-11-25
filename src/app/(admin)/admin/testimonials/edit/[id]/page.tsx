@@ -261,7 +261,7 @@ export default function EditTestimonial() {
                     name="content"
                     value={formData.content}
                     onChange={handleChange}
-                    placeholder="Sarah provided exceptional data analysis that transformed our business operations. Her insights were invaluable..."
+                    placeholder="Vikram provided exceptional data analysis that transformed our business operations. Her insights were invaluable..."
                     rows={6}
                     required
                   />
