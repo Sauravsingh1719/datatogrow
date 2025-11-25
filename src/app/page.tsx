@@ -13,7 +13,7 @@ export default function Home() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
       className="min-h-screen"
     >
       <Hero />
