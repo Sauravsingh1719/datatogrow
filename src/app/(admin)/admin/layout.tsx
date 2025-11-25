@@ -134,7 +134,7 @@ export default function AdminLayout({
                 <div className="text-sm text-gray-500">Administrator</div>
               </div>
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center text-white font-semibold">
-                SC
+                VR
               </div>
             </div>
           </div>
