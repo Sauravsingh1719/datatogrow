@@ -155,6 +155,7 @@ const EnhancedTiptapEditor = ({
   placeholder = "Start writing here...",
 }: EnhancedTiptapEditorProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -245,19 +246,36 @@ const EnhancedTiptapEditor = ({
     immediatelyRender: false,
   });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !editor) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const imageUrl = event.target?.result as string;
-      editor.chain().focus().setImage({ src: imageUrl }).run();
-    };
-    reader.readAsDataURL(file);
+    setIsUploading(true); 
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      
+      editor.chain().focus().setImage({ src: data.url }).run();
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image. Please try again.");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -269,6 +287,7 @@ const EnhancedTiptapEditor = ({
         className="hidden"
         accept="image/*"
         onChange={handleImageUpload}
+        disabled={isUploading} 
       />
       
       {editor && (
@@ -631,6 +650,7 @@ const EnhancedToolBar = ({ editor, fileInputRef }: { editor: Editor; fileInputRe
       <Separator orientation="vertical" className="h-6" />
 
       <Button
+        type="button"
         size="sm"
         variant="outline"
         onClick={() => fileInputRef.current?.click()}
