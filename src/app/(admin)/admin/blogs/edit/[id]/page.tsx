@@ -1,4 +1,3 @@
-// app/admin/blogs/edit/[id]/page.tsx - FIXED VERSION
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -6,10 +5,10 @@ import { useRouter, useParams } from 'next/navigation'
 import { Save, ArrowLeft, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import TiptapEditor from '@/components/TipTapEditor'
 
 interface BlogPost {
   _id: string;
@@ -114,6 +113,15 @@ export default function EditBlogPost() {
     }
   }
 
+  const handleContentChange = (htmlContent: string) => {
+    if (formData) {
+      setFormData({
+        ...formData,
+        content: htmlContent
+      })
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
@@ -147,7 +155,7 @@ export default function EditBlogPost() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
@@ -194,9 +202,9 @@ export default function EditBlogPost() {
 
       <form onSubmit={handleSubmit}>
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Main Content */}
+          {}
           <div className="lg:col-span-2 space-y-6">
-            {/* Title */}
+            {}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Post Title</CardTitle>
@@ -215,7 +223,7 @@ export default function EditBlogPost() {
               </CardContent>
             </Card>
 
-            {/* Excerpt */}
+            {}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Excerpt</CardTitle>
@@ -224,39 +232,36 @@ export default function EditBlogPost() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Textarea
+                <Input
                   placeholder="Enter a brief excerpt..."
                   value={formData.excerpt}
                   onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  rows={3}
                   required
                 />
               </CardContent>
             </Card>
 
-            {/* Content */}
+            {}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Content</CardTitle>
                 <CardDescription>
-                  Write your blog post content (supports HTML)
+                  Write your blog post content with rich text editor
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Textarea
+                <TiptapEditor
+                  content={formData.content}
+                  onChange={handleContentChange}
                   placeholder="Write your blog post content here..."
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  rows={15}
-                  required
                 />
               </CardContent>
             </Card>
           </div>
 
-          {/* Sidebar */}
+          {}
           <div className="space-y-6">
-            {/* Publish Settings */}
+            {}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Publish Settings</CardTitle>
@@ -285,7 +290,7 @@ export default function EditBlogPost() {
               </CardContent>
             </Card>
 
-            {/* Category */}
+            {}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Category</CardTitle>
@@ -303,7 +308,7 @@ export default function EditBlogPost() {
               </CardContent>
             </Card>
 
-            {/* Read Time */}
+            {}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Read Time</CardTitle>
@@ -317,7 +322,7 @@ export default function EditBlogPost() {
               </CardContent>
             </Card>
 
-            {/* Tags */}
+            {}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Tags</CardTitle>

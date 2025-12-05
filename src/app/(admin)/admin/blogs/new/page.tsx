@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Save, ArrowLeft, Eye } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Save, ArrowLeft, Eye } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import TiptapEditor from '@/components/TipTapEditor';
 
 export default function NewBlogPost() {
-  const router = useRouter()
-  const [saving, setSaving] = useState(false)
+  const router = useRouter();
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
@@ -22,8 +22,8 @@ export default function NewBlogPost() {
     tags: [] as string[],
     featured: false,
     published: false
-  })
-  const [newTag, setNewTag] = useState('')
+  });
+  const [newTag, setNewTag] = useState('');
 
   const categories = [
     'Data Visualization',
@@ -32,11 +32,11 @@ export default function NewBlogPost() {
     'Industry Trends',
     'Communication',
     'Data Engineering'
-  ]
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSaving(true)
+    e.preventDefault();
+    setSaving(true);
 
     try {
       const response = await fetch('/api/blogs', {
@@ -45,38 +45,45 @@ export default function NewBlogPost() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-      })
+      });
 
       if (response.ok) {
-        router.push('/admin/blogs')
+        router.push('/admin/blogs');
       }
     } catch (error) {
-      console.error('Error creating blog post:', error)
+      console.error('Error creating blog post:', error);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const addTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
       setFormData({
         ...formData,
         tags: [...formData.tags, newTag.trim()]
-      })
-      setNewTag('')
+      });
+      setNewTag('');
     }
-  }
+  };
 
   const removeTag = (tagToRemove: string) => {
     setFormData({
       ...formData,
       tags: formData.tags.filter(tag => tag !== tagToRemove)
-    })
-  }
+    });
+  };
+
+  const handleContentChange = (htmlContent: string) => {
+    setFormData({
+      ...formData,
+      content: htmlContent
+    });
+  };
 
   return (
     <div className="space-y-6">
-      {}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
@@ -111,9 +118,9 @@ export default function NewBlogPost() {
 
       <form onSubmit={handleSubmit}>
         <div className="grid lg:grid-cols-3 gap-6">
-          {}
+          {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {}
+            {/* Title */}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Post Title</CardTitle>
@@ -132,7 +139,7 @@ export default function NewBlogPost() {
               </CardContent>
             </Card>
 
-            {}
+            {/* Excerpt */}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Excerpt</CardTitle>
@@ -141,39 +148,35 @@ export default function NewBlogPost() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Textarea
+                <Input
                   placeholder="Enter a brief excerpt..."
                   value={formData.excerpt}
                   onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  rows={3}
                   required
                 />
               </CardContent>
             </Card>
 
-            {}
+            {/* Content - Updated with Tiptap Editor */}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Content</CardTitle>
                 <CardDescription>
-                  Write your blog post content (supports HTML)
+                  Write your blog post content with rich text editor
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Textarea
-                  placeholder="Write your blog post content here..."
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  rows={15}
-                  required
+                <TiptapEditor
+                  content={formData.content}
+                  onChange={handleContentChange}
                 />
               </CardContent>
             </Card>
           </div>
 
-          {}
+          {/* Right Column */}
           <div className="space-y-6">
-            {}
+            {/* Publish Settings */}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Publish Settings</CardTitle>
@@ -202,7 +205,7 @@ export default function NewBlogPost() {
               </CardContent>
             </Card>
 
-            {}
+            {/* Category */}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Category</CardTitle>
@@ -220,7 +223,7 @@ export default function NewBlogPost() {
               </CardContent>
             </Card>
 
-            {}
+            {/* Read Time */}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Read Time</CardTitle>
@@ -234,7 +237,7 @@ export default function NewBlogPost() {
               </CardContent>
             </Card>
 
-            {}
+            {/* Tags */}
             <Card className="bg-white border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Tags</CardTitle>
@@ -277,5 +280,5 @@ export default function NewBlogPost() {
         </div>
       </form>
     </div>
-  )
+  );
 }
