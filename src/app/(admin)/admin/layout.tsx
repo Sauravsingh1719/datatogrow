@@ -13,9 +13,11 @@ import {
   X, 
   LogOut,
   Settings,
-  User
+  User,
+  Network
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useSession, signOut } from 'next-auth/react';
 
 export default function AdminLayout({
   children,
@@ -24,6 +26,7 @@ export default function AdminLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
+  const { data: session, status } = useSession();
 
   const navItems = [
     {
@@ -45,8 +48,18 @@ export default function AdminLayout({
       name: 'Messages',
       href: '/admin/messages',
       icon: Mail
+    },
+    {
+      name: 'Projects',
+      href: '/admin/projects',
+      icon: Network
     }
   ]
+
+   const handleLogout = () => {
+    signOut({ callbackUrl: '/' });
+    setSidebarOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -101,7 +114,7 @@ export default function AdminLayout({
               <User size={20} />
               View Site
             </Link>
-            <button className="flex items-center gap-3 w-full px-4 py-3 rounded-xl font-medium text-red-600 hover:bg-red-50 transition-all duration-200">
+            <button className="flex items-center gap-3 w-full px-4 py-3 rounded-xl font-medium text-red-600 hover:bg-red-50 transition-all duration-200" onClick={handleLogout}>
               <LogOut size={20} />
               Logout
             </button>
