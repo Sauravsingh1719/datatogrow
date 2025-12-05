@@ -1,4 +1,3 @@
-// app/contact/page.tsx
 'use client'
 
 import { motion } from 'framer-motion'
@@ -63,7 +62,7 @@ export default function ContactPage() {
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -218,6 +217,9 @@ export default function ContactPage() {
                   <CardDescription className="text-lg">
                     Fill out the form below and I'll get back to you as soon as possible
                   </CardDescription>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Fields marked with <span className="text-red-500">*</span> are required
+                  </p>
                 </CardHeader>
                 <CardContent>
                   {isSubmitted ? (
@@ -246,7 +248,7 @@ export default function ContactPage() {
                       <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label htmlFor="name" className="text-sm font-medium">
-                            Full Name *
+                            Full Name <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             type="text"
@@ -262,7 +264,7 @@ export default function ContactPage() {
                         
                         <div className="space-y-2">
                           <Label htmlFor="email" className="text-sm font-medium">
-                            Email Address *
+                            Email Address <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             type="email"
@@ -280,7 +282,7 @@ export default function ContactPage() {
                       <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label htmlFor="company" className="text-sm font-medium">
-                            Company
+                            Company <span className="text-gray-500 text-sm font-normal">(optional)</span>
                           </Label>
                           <Input
                             type="text"
@@ -295,13 +297,12 @@ export default function ContactPage() {
 
                         <div className="space-y-2">
                           <Label htmlFor="subject" className="text-sm font-medium">
-                            Subject *
+                            Subject <span className="text-gray-500 text-sm font-normal">(optional)</span>
                           </Label>
                           <Input
                             type="text"
                             id="subject"
                             name="subject"
-                            required
                             value={formData.subject}
                             onChange={handleChange}
                             className="bg-white border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -313,16 +314,16 @@ export default function ContactPage() {
                       <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label htmlFor="budget" className="text-sm font-medium">
-                            Project Budget
+                            Project Budget <span className="text-gray-500 text-sm font-normal">(optional)</span>
                           </Label>
                           <select
                             id="budget"
                             name="budget"
                             value={formData.budget}
-                            onChange={handleChange as any}
+                            onChange={handleChange}
                             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                           >
-                            <option value="">Select budget range</option>
+                            <option value="">Select budget range (optional)</option>
                             <option value="1k-5k">$1,000 - $5,000</option>
                             <option value="5k-15k">$5,000 - $15,000</option>
                             <option value="15k-30k">$15,000 - $30,000</option>
@@ -332,16 +333,16 @@ export default function ContactPage() {
 
                         <div className="space-y-2">
                           <Label htmlFor="timeline" className="text-sm font-medium">
-                            Timeline
+                            Timeline <span className="text-gray-500 text-sm font-normal">(optional)</span>
                           </Label>
                           <select
                             id="timeline"
                             name="timeline"
                             value={formData.timeline}
-                            onChange={handleChange as any}
+                            onChange={handleChange}
                             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                           >
-                            <option value="">Select timeline</option>
+                            <option value="">Select timeline (optional)</option>
                             <option value="urgent">Urgent (1-2 weeks)</option>
                             <option value="soon">Soon (1 month)</option>
                             <option value="flexible">Flexible (1-3 months)</option>
@@ -352,13 +353,12 @@ export default function ContactPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="message" className="text-sm font-medium">
-                          Project Details *
+                          Project Details <span className="text-gray-500 text-sm font-normal">(optional)</span>
                         </Label>
                         <Textarea
                           id="message"
                           name="message"
                           rows={6}
-                          required
                           value={formData.message}
                           onChange={handleChange}
                           className="bg-white border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"

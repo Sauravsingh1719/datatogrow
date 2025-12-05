@@ -1,7 +1,5 @@
-
 import './globals.css'
 import { Inter } from 'next/font/google'
-import WelcomeWrapper from '@/components/WelcomeWrapper'
 import LayoutContent from '@/components/LayoutContent'
 import AuthProvider from '@/context/AuthProvider';
 
@@ -20,11 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={inter.className}>
-        <WelcomeWrapper>
+        
           <LayoutContent>
            <AuthProvider>{children}</AuthProvider>
           </LayoutContent>
-        </WelcomeWrapper>
+     
       </body>
     </html>
   )

@@ -17,10 +17,10 @@ const ContactSchema: Schema = new Schema(
     name: { type: String, required: true },
     email: { type: String, required: true },
     company: { type: String, default: '' },
-    subject: { type: String, required: true },
+    subject: { type: String, required: false },
     budget: { type: String, default: '' },
     timeline: { type: String, default: '' },
-    message: { type: String, required: true },
+    message: { type: String, required: false },
     read: { type: Boolean, default: false },
     responded: { type: Boolean, default: false }
   },
