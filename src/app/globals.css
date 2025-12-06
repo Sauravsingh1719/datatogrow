@@ -215,3 +215,20 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-blue-400;
 }
+
+/* Force empty paragraphs to have height */
+.prose p:empty::before {
+  content: "\200B"; /* Zero-width space character */
+  display: inline-block;
+}
+
+/* Ensure minimum height for all paragraphs */
+.prose p {
+  min-height: 1.25em; /* Matches line-height for empty lines */
+  margin-bottom: 1em;
+}
+
+/* Preserve whitespace for content */
+.prose {
+  white-space: pre-wrap; /* Respect line breaks */
+}
