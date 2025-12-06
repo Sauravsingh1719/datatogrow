@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminEmail = process.env.ADMIN_EMAILID;
         const adminPassword = process.env.ADMIN_PASSWORD;
 
         if (!adminEmail || !adminPassword) {

@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, ArrowRight, Clock, Eye, MessageCircle, Search, Filter, BookOpen, Sparkles, TrendingUp } from 'lucide-react'
+import { Calendar, ArrowRight, Clock, Eye, MessageCircle, Search, Filter, BookOpen, Sparkles, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -34,6 +34,14 @@ export default function BlogPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All Posts')
+  
+  // Newsletter subscription state
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [isSubscribing, setIsSubscribing] = useState(false)
+  const [subscriptionStatus, setSubscriptionStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' })
 
   useEffect(() => {
     fetchBlogPosts()
@@ -67,6 +75,59 @@ export default function BlogPage() {
     'Communication',
     'Data Engineering'
   ]
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!newsletterEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newsletterEmail)) {
+      setSubscriptionStatus({
+        type: 'error',
+        message: 'Please enter a valid email address'
+      })
+      return
+    }
+    
+    setIsSubscribing(true)
+    setSubscriptionStatus({ type: null, message: '' })
+    
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: newsletterEmail,
+        }),
+      })
+      
+      const data = await response.json()
+      
+      if (response.ok) {
+        setSubscriptionStatus({
+          type: 'success',
+          message: data.message || 'Successfully subscribed! Check your email for a welcome message.'
+        })
+        setNewsletterEmail('')
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => {
+          setSubscriptionStatus({ type: null, message: '' })
+        }, 5000)
+      } else {
+        setSubscriptionStatus({
+          type: 'error',
+          message: data.message || 'Failed to subscribe. Please try again.'
+        })
+      }
+    } catch (error) {
+      console.error('Subscription error:', error)
+      setSubscriptionStatus({
+        type: 'error',
+        message: 'Network error. Please try again.'
+      })
+    } finally {
+      setIsSubscribing(false)
+    }
+  }
 
   // Filter Logic
   const filteredPosts = blogPosts.filter(post => {
@@ -315,29 +376,93 @@ export default function BlogPage() {
           viewport={{ once: true }}
           className="mt-24"
         >
-          <div className="relative bg-slate-900 rounded-3xl overflow-hidden p-8 md:p-16 text-center">
+          <div className="relative bg-gradient-to-br from-blue-900 via-slate-900 to-indigo-900 rounded-3xl overflow-hidden p-8 md:p-16 text-center">
             {/* Abstract Shapes */}
             <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500 rounded-full blur-[100px] opacity-20 transform -translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-500 rounded-full blur-[100px] opacity-20 transform translate-x-1/2 translate-y-1/2" />
             
+            {/* Floating sparkles */}
+            <div className="absolute top-4 right-4 animate-pulse">
+              <Sparkles className="w-6 h-6 text-blue-400" />
+            </div>
+            
             <div className="relative z-10 max-w-2xl mx-auto">
-              <BookOpen className="w-12 h-12 text-blue-400 mx-auto mb-6" />
-              <h2 className="text-3xl font-bold text-white mb-4">Stay Ahead of the Curve</h2>
-              <p className="text-slate-300 mb-8 text-lg">
-                Join 5,000+ data professionals. Get the latest tutorials, industry trends, and insights delivered straight to your inbox.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <Input 
-                  placeholder="name@example.com" 
-                  className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 h-12 rounded-xl focus-visible:ring-blue-500" 
-                />
-                <Button className="h-12 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors">
-                  Subscribe
-                </Button>
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl mb-6">
+                <BookOpen className="w-8 h-8 text-white" />
               </div>
-              <p className="text-slate-500 text-xs mt-6">
-                By subscribing, you agree to our Privacy Policy. No spam, ever.
+              <h2 className="text-3xl font-bold text-white mb-4">
+                Never Miss an Insight
+              </h2>
+              <p className="text-slate-300 mb-8 text-lg leading-relaxed">
+                Join <span className="text-blue-400 font-semibold">5,000+ data professionals</span> who receive 
+                exclusive articles, tutorials, and industry analysis every week. Be the first to know when 
+                we publish new content.
               </p>
+              
+              <form onSubmit={handleNewsletterSubmit} className="space-y-4 max-w-md mx-auto">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Input 
+                    type="email"
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    placeholder="Enter your email address" 
+                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 h-12 rounded-xl focus-visible:ring-blue-500 focus-visible:border-blue-500 backdrop-blur-sm"
+                    disabled={isSubscribing}
+                    required
+                  />
+                  <Button 
+                    type="submit"
+                    disabled={isSubscribing}
+                    className="h-12 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-medium transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubscribing ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                        Subscribing...
+                      </>
+                    ) : 'Get Free Updates'}
+                  </Button>
+                </div>
+                
+                {/* Status Messages */}
+                {subscriptionStatus.type && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex items-center justify-center gap-2 p-3 rounded-lg backdrop-blur-sm ${
+                      subscriptionStatus.type === 'success' 
+                        ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                        : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                    }`}
+                  >
+                    {subscriptionStatus.type === 'success' ? (
+                      <CheckCircle className="w-4 h-4" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4" />
+                    )}
+                    <span className="text-sm">{subscriptionStatus.message}</span>
+                  </motion.div>
+                )}
+                
+                <p className="text-slate-400 text-xs mt-4">
+                  By subscribing, you agree to our Privacy Policy. We respect your inbox — no spam, just valuable insights.
+                </p>
+              </form>
+              
+              <div className="mt-8 flex items-center justify-center gap-6 text-sm text-slate-400">
+                <span className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  Weekly updates
+                </span>
+                <span className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  Exclusive content
+                </span>
+                <span className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  No spam, ever
+                </span>
+              </div>
             </div>
           </div>
         </motion.div>

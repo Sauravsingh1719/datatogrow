@@ -14,7 +14,8 @@ import {
   LogOut,
   Settings,
   User,
-  Network
+  Network,
+  Newspaper
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useSession, signOut } from 'next-auth/react';
@@ -53,6 +54,11 @@ export default function AdminLayout({
       name: 'Projects',
       href: '/admin/projects',
       icon: Network
+    },
+    {
+      name: 'Subscribers',
+      href: '/admin/newsletter',
+      icon: Newspaper
     }
   ]
 
