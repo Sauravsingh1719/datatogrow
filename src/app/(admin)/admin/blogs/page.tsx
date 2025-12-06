@@ -1,4 +1,3 @@
-// app/admin/blogs/page.tsx - FIXED DELETE FUNCTION
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -12,7 +11,8 @@ import {
   Filter,
   Calendar,
   BookOpen,
-  EyeOff
+  EyeOff,
+  Send
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -39,6 +39,7 @@ export default function AdminBlogs() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [newsletterLoading, setNewsletterLoading] = useState<string | null>(null)
 
   useEffect(() => {
     fetchBlogs()
@@ -110,6 +111,30 @@ export default function AdminBlogs() {
     }
   }
 
+  const sendNewsletter = async (id: string, title: string) => {
+    if (!confirm(`Send newsletter notification about "${title}" to all subscribers?`)) return
+
+    setNewsletterLoading(id)
+    try {
+      const response = await fetch(`/api/blogs/${id}/newsletter`, {
+        method: 'POST'
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        alert(`✅ Newsletter sent successfully to ${data.sentTo} subscribers!`)
+      } else {
+        alert(`❌ Failed to send newsletter: ${data.message}`)
+      }
+    } catch (error) {
+      console.error('Error sending newsletter:', error)
+      alert('❌ Error sending newsletter')
+    } finally {
+      setNewsletterLoading(null)
+    }
+  }
+
   const filteredBlogs = blogs.filter(blog =>
     blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     blog.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -126,7 +151,7 @@ export default function AdminBlogs() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Blog Posts</h1>
@@ -140,7 +165,7 @@ export default function AdminBlogs() {
         </Link>
       </div>
 
-      {/* Search and Filters */}
+      {}
       <Card className="bg-white border-0 shadow-lg">
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
@@ -166,7 +191,7 @@ export default function AdminBlogs() {
         </CardContent>
       </Card>
 
-      {/* Stats */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
           <CardContent className="p-6">
@@ -203,7 +228,7 @@ export default function AdminBlogs() {
         </Card>
       </div>
 
-      {/* Blog Posts Table */}
+      {}
       <Card className="bg-white border-0 shadow-lg">
         <CardHeader>
           <CardTitle>All Blog Posts</CardTitle>
@@ -282,6 +307,28 @@ export default function AdminBlogs() {
                         <Edit size={16} />
                       </Button>
                     </Link>
+                    
+                    {}
+                    {blog.published && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-indigo-300 text-indigo-600 hover:bg-indigo-50"
+                        onClick={() => sendNewsletter(blog._id, blog.title)}
+                        disabled={newsletterLoading === blog._id}
+                        title="Send newsletter to subscribers"
+                      >
+                        {newsletterLoading === blog._id ? (
+                          <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <>
+                            <Send size={16} className="mr-1" />
+                            Notify
+                          </>
+                        )}
+                      </Button>
+                    )}
+                    
                     <Button
                       variant="outline"
                       size="sm"
