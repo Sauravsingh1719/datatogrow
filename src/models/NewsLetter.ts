@@ -26,8 +26,7 @@ const NewsletterSchema: Schema = new Schema(
   },
   { timestamps: true }
 );
-
-NewsletterSchema.index({ email: 1 }, { unique: true });
+;
 NewsletterSchema.index({ active: 1 });
 NewsletterSchema.index({ subscribedAt: -1 });
 
