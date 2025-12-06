@@ -25,23 +25,19 @@ export async function POST(req: Request) {
   await dbConnect();
 
   try {
-    const { name, email, company, subject, budget, timeline, message } =
+    const { name, email, message } =
       await req.json();
 
     const contact = new ContactModel({
       name,
       email,
-      company: company || "",
-      subject: subject || "",
-      budget: budget || "",
-      timeline: timeline || "",
       message: message || "",
     });
 
     await contact.save();
 
     await sendEmails(
-      { name, email, company, subject, budget, timeline, message },
+      { name, email, message },
       contact._id.toString()
     );
 

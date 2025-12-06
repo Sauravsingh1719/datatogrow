@@ -14,10 +14,6 @@ export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    company: '',
-    subject: '',
-    budget: '',
-    timeline: '',
     message: ''
   })
 
@@ -44,10 +40,6 @@ export default function ContactPage() {
         setFormData({
           name: '',
           email: '',
-          company: '',
-          subject: '',
-          budget: '',
-          timeline: '',
           message: ''
         })
       } else {
@@ -276,78 +268,6 @@ export default function ContactPage() {
                             className="bg-white border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                             placeholder="your.email@example.com"
                           />
-                        </div>
-                      </div>
-
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="company" className="text-sm font-medium">
-                            Company <span className="text-gray-500 text-sm font-normal">(optional)</span>
-                          </Label>
-                          <Input
-                            type="text"
-                            id="company"
-                            name="company"
-                            value={formData.company}
-                            onChange={handleChange}
-                            className="bg-white border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                            placeholder="Your company name"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="subject" className="text-sm font-medium">
-                            Subject <span className="text-gray-500 text-sm font-normal">(optional)</span>
-                          </Label>
-                          <Input
-                            type="text"
-                            id="subject"
-                            name="subject"
-                            value={formData.subject}
-                            onChange={handleChange}
-                            className="bg-white border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                            placeholder="What is this regarding?"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="budget" className="text-sm font-medium">
-                            Project Budget <span className="text-gray-500 text-sm font-normal">(optional)</span>
-                          </Label>
-                          <select
-                            id="budget"
-                            name="budget"
-                            value={formData.budget}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                          >
-                            <option value="">Select budget range (optional)</option>
-                            <option value="1k-5k">$1,000 - $5,000</option>
-                            <option value="5k-15k">$5,000 - $15,000</option>
-                            <option value="15k-30k">$15,000 - $30,000</option>
-                            <option value="30k+">$30,000+</option>
-                          </select>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="timeline" className="text-sm font-medium">
-                            Timeline <span className="text-gray-500 text-sm font-normal">(optional)</span>
-                          </Label>
-                          <select
-                            id="timeline"
-                            name="timeline"
-                            value={formData.timeline}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                          >
-                            <option value="">Select timeline (optional)</option>
-                            <option value="urgent">Urgent (1-2 weeks)</option>
-                            <option value="soon">Soon (1 month)</option>
-                            <option value="flexible">Flexible (1-3 months)</option>
-                            <option value="planning">Just planning</option>
-                          </select>
                         </div>
                       </div>
 

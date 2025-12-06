@@ -90,18 +90,29 @@ export default function Projects() {
   return (
     <section id="projects" className="py-20 relative overflow-hidden bg-white">
       
-      {}
-      <div className="absolute inset-0 h-full w-full bg-white pointer-events-none">
-        <div className="absolute inset-0">
-          <div className="h-full w-full bg-white bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:40px_40px]">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `radial-gradient(circle at 20px 20px, #3B82F6 1px, transparent 1px)`,
-              backgroundSize: '40px 40px'
-            }} />
-          </div>
+      {/* Updated Background */}
+      <div className="absolute inset-0 h-full w-full bg-white">
+        {/* Circuit/connection lines pattern */}
+        <div className="absolute inset-0 opacity-[0.03]">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="circuit-pattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                <circle cx="10" cy="10" r="1.5" fill="#3B82F6"/>
+                <circle cx="50" cy="10" r="1.5" fill="#6366F1"/>
+                <circle cx="10" cy="50" r="1.5" fill="#8B5CF6"/>
+                <circle cx="50" cy="50" r="1.5" fill="#3B82F6"/>
+                <line x1="10" y1="10" x2="50" y2="10" stroke="#3B82F6" strokeWidth="8.0"/>
+                <line x1="10" y1="10" x2="10" y2="50" stroke="#3B82F6" strokeWidth="8.0"/>
+                <line x1="10" y1="50" x2="50" y2="50" stroke="#6366F1" strokeWidth="8.0"/>
+                <line x1="50" y1="10" x2="50" y2="50" stroke="#8B5CF6" strokeWidth="8.0"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#circuit-pattern)" />
+          </svg>
         </div>
-        <div className="absolute bottom-0 right-0 h-[400px] w-[400px] bg-gradient-to-tl from-indigo-50/20 via-blue-50/10 to-transparent rounded-full blur-3xl" />
-        <div className="absolute top-0 left-0 h-[300px] w-[300px] bg-gradient-to-br from-blue-100/10 to-transparent rounded-full blur-3xl" />
+        
+        {/* Gradient overlays */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-[800px] bg-gradient-to-b from-blue-50/30 via-transparent to-transparent blur-3xl" />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">

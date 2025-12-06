@@ -130,9 +130,21 @@ export default function Skills() {
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-6xl mx-auto">
-          <TabsList className="grid w-full grid-cols-2 mb-12">
-            <TabsTrigger value="technical" className="text-lg py-3">Technical Skills</TabsTrigger>
-            <TabsTrigger value="analytics" className="text-lg py-3">Skill Analytics</TabsTrigger>
+          
+          {/* UPDATED TABS LIST STYLE */}
+          <TabsList className="grid w-full grid-cols-2 mb-12 bg-gray-100 p-1.5 rounded-xl h-auto">
+            <TabsTrigger 
+              value="technical" 
+              className="text-lg py-3 rounded-lg data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-300"
+            >
+              Technical Skills
+            </TabsTrigger>
+            <TabsTrigger 
+              value="analytics" 
+              className="text-lg py-3 rounded-lg data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-300"
+            >
+              Skill Analytics
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="technical" className="space-y-8">

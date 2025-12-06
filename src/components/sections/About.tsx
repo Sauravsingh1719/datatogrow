@@ -20,27 +20,6 @@ export default function About() {
 
   return (
     <section id="about" ref={ref} className="relative py-20 overflow-hidden bg-white">
-      
-      {/* --- UPDATED BACKGROUND: Wave Pattern --- */}
-      <div className="absolute inset-0 h-full w-full bg-white">
-        {/* Subtle wave pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="wave-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-                <path d="M0,50 Q25,30 50,50 T100,50" fill="none" stroke="#3B82F6" strokeWidth="0.9"/>
-                <path d="M0,70 Q25,90 50,70 T100,70" fill="none" stroke="#6366F1" strokeWidth="0.9"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#wave-pattern)" />
-          </svg>
-        </div>
-        
-        {/* Subtle gradient overlays */}
-        <div className="absolute right-0 top-1/4 h-[400px] w-[400px] bg-gradient-to-br from-blue-100/20 to-indigo-100/10 rounded-full blur-3xl" />
-        <div className="absolute left-0 bottom-0 h-[400px] w-[400px] bg-gradient-to-tr from-blue-50/20 to-transparent rounded-full blur-3xl" />
-      </div>
-      {/* --- END BACKGROUND --- */}
 
       <div className="container mx-auto px-6 relative z-10">
         <motion.div

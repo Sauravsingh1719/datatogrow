@@ -90,7 +90,7 @@ export default function App() {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white pt-20 font-sans">
       
-      <div className="absolute inset-0 h-full w-full bg-white bg-[linear-gradient(to_right,#8080801a_1px,transparent_1px),linear-gradient(to_bottom,#8080801a_1px,transparent_1px)] bg-[size:24px_24px]">
+      <div className="absolute inset-0 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
         <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_800px_at_50%_200px,#7c3aed05,transparent)]" />
       </div>
 
@@ -159,10 +159,13 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
+            <a href="/Vikram_Kumar_Resume.pdf" download>
             <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-blue-900/20 shadow-lg hover:shadow-blue-900/30 transition-all">
+            
               <Download className="mr-2 h-5 w-5" />
               Download Resume
             </Button>
+            </a>
             <Button variant="outline" size="lg" className="h-14 px-8 text-lg rounded-full border-slate-200 hover:border-blue-300 bg-white hover:bg-slate-50 text-slate-700">
               <Play className="mr-2 h-5 w-5 fill-slate-700" />
               Watch Demo
