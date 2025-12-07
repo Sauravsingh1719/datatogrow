@@ -116,7 +116,7 @@ export default function App() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                <span className="text-sm font-medium text-slate-600">Available for new projects</span>
+                <span className="text-sm font-medium text-slate-600">Let's discuss new opportunity</span>
               </div>
             </motion.div>
 
@@ -183,9 +183,8 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
             >
-              <StatCard number="50+" label="Projects" />
-              <StatCard number="35%" label="Efficiency" />
-              <StatCard number="5yr" label="Experience" />
+              <StatCard number="10+" label="Projects" />
+              <StatCard number="15yr" label="Experience" />
             </motion.div>
           </div>
 

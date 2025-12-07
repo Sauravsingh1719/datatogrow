@@ -99,8 +99,8 @@ export default function Navigation() {
                   <BarChart3 className="text-white" size={24} />
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-gray-900">Vikram</div>
-                  <div className="text-xs text-gray-500 font-medium">Data Analyst</div>
+                  <div className="text-xl font-bold text-gray-900">Vikram Kumar</div>
+                  <div className="text-xs text-gray-500 font-medium">Senior Data Analyst</div>
                 </div>
               </Link>
             </div>

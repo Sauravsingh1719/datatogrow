@@ -25,7 +25,7 @@ export default function About() {
       description: 'Designed and analyzed A/B tests on subscription and promo strategies, using RFM-based segmentation to tailoroffers and measure impact on contribution margin and order volume in the tested groups.'
     },
     {
-      period: 'Dec 2017 – Aug 2021',
+      period: 'Jan 2015 – Aug 2021',
       role: 'Senior BI Developer',
       company: 'Amdocs Ltd - Limassol, Cyprus',
       description: 'Led a team of 10 BI analysts and migrated 250+ enterprise reports to cloud infrastructure improved speed, scalability and governance.'
