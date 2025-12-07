@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, Download, Play, Database, BarChart3, PieChart } from 'lucide-react';
+import { ChevronDown, Play, Github, Linkedin, Mail } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -17,6 +17,7 @@ interface FloatingIconProps {
   icon: React.ReactNode;
   position: string;
   delay: number;
+  href: string;
 }
 
 const Button: React.FC<ButtonProps> = ({ 
@@ -64,11 +65,13 @@ const StatCard: React.FC<StatCardProps> = ({ number, label }) => {
   );
 };
 
-const FloatingIcon: React.FC<FloatingIconProps> = ({ icon, position, delay }) => {
+const FloatingIcon: React.FC<FloatingIconProps> = ({ icon, position, delay, href }) => {
   return (
-    <motion.div
-      
-      className={`absolute ${position} z-20 bg-white p-2 md:p-3 rounded-full shadow-lg border border-slate-100`}
+    <motion.a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`absolute ${position} z-20 bg-white p-2 md:p-3 rounded-full shadow-lg border border-slate-100 hover:scale-110 transition-transform cursor-pointer`}
       animate={{
         y: [-10, 10, -10],
         rotate: [0, 5, -5, 0],
@@ -81,7 +84,7 @@ const FloatingIcon: React.FC<FloatingIconProps> = ({ icon, position, delay }) =>
       }}
     >
       {icon}
-    </motion.div>
+    </motion.a>
   );
 };
 
@@ -89,7 +92,7 @@ export default function App() {
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-white pt-[25%] md:pt-10 font-sans">
       
-      {/* Background Grids */}
+      {}
       <div className="absolute inset-0 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
         <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_800px_at_100%_200px,#7c3aed05,transparent)]" />
       </div>
@@ -98,10 +101,10 @@ export default function App() {
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           
-          {/* Text Content */}
+          {}
           <div className="text-left order-2 lg:order-1">
             
-            {/* Status Badge */}
+            {}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -117,7 +120,6 @@ export default function App() {
               </div>
             </motion.div>
 
-       
             <motion.h1 
               className="text-3xl md:text-5xl lg:text-7xl font-bold text-slate-900 tracking-tight mb-6 leading-[1.1]"
               initial={{ opacity: 0, x: -20 }}
@@ -130,7 +132,6 @@ export default function App() {
               </span>
             </motion.h1>
             
-         
             <motion.p 
               className="text-sm md:text-lg text-slate-600 mb-8 max-w-lg leading-relaxed"
               initial={{ opacity: 0, x: -20 }}
@@ -140,7 +141,6 @@ export default function App() {
               Senior Data Analyst transforming complex datasets into <span className="text-slate-900 font-semibold">clear, actionable strategies</span>. I help forward-thinking companies unlock revenue through precision analytics.
             </motion.p>
 
-         
             <motion.div 
               className="flex flex-col sm:flex-row gap-4 justify-start items-center mb-12"
               initial={{ opacity: 0, y: 20 }}
@@ -159,7 +159,6 @@ export default function App() {
               
               <div className='flex flex-row gap-3.5 w-full sm:w-auto'>
                 <a href="#projects" className="flex-1 sm:flex-none">
-                  {/* Updated Projects Button to Primary style */}
                   <Button 
                     size="lg" 
                     className="w-full sm:w-auto h-10 px-5 text-lg rounded-full shadow-blue-900/20 shadow-lg hover:shadow-blue-900/30 transition-all"
@@ -168,7 +167,6 @@ export default function App() {
                   </Button>
                 </a>
                 <a href="/blog" className="flex-1 sm:flex-none">
-                   {/* Updated Blogs Button to Primary style */}
                   <Button 
                     size="lg" 
                     className="w-full sm:w-auto h-10 px-5 text-lg rounded-full shadow-blue-900/20 shadow-lg hover:shadow-blue-900/30 transition-all"
@@ -179,7 +177,6 @@ export default function App() {
               </div>
             </motion.div>
 
-      
             <motion.div 
               className="grid grid-cols-3 gap-4 max-w-lg"
               initial={{ opacity: 0, y: 20 }}
@@ -192,7 +189,6 @@ export default function App() {
             </motion.div>
           </div>
 
-          
           <motion.div 
             className="relative order-1 lg:order-2 flex justify-center lg:justify-end"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -202,14 +198,14 @@ export default function App() {
          
             <div className="relative w-full max-w-[280px] md:max-w-[500px] aspect-square">
               
-              {/* Background Shapes */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-indigo-50 rounded-[2.5rem] transform rotate-6 scale-105 z-0 border border-slate-100" />
+              {}
+              <div className="absolute inset-0 rounded-[2.5rem] transform rotate-6 scale-105 z-0 border border-slate-100" />
               
-              {/* Border */}
+              {}
               <div className="absolute inset-0 border-2 border-slate-200 rounded-[2.5rem] transform -rotate-3 z-0" />
 
-              {/* Main Image */}
-              <div className="absolute inset-2 bg-slate-200 rounded-[2rem] overflow-hidden z-10 shadow-2xl">
+              {}
+              <div className="absolute inset-2  rounded-[2rem] overflow-hidden z-10 shadow-2xl">
                 <img 
                   src="/profile.jpeg" 
                   alt="Profile" 
@@ -217,21 +213,29 @@ export default function App() {
                 />
               </div>
 
-              {/* Floating Icons */}
+              {}
+              {}
               <FloatingIcon 
-                icon={<PieChart className="text-blue-500 w-5 h-5 md:w-7 md:h-7" />} 
+                icon={<Github className="text-slate-900 w-5 h-5 md:w-7 md:h-7" />} 
                 position="-top-6 -left-6" 
-                delay={0} 
+                delay={0}
+                href="https://github.com/vikram1840" 
               />
+              
+              {}
               <FloatingIcon 
-                icon={<BarChart3 className="text-indigo-500 w-6 h-6 md:w-8 md:h-8" />} 
+                icon={<Linkedin className="text-blue-600 w-6 h-6 md:w-8 md:h-8" />} 
                 position="top-1/2 -right-10" 
-                delay={2} 
+                delay={2}
+                href="https://www.linkedin.com/in/vikram1840/" 
               />
+              
+              {}
               <FloatingIcon 
-                icon={<Database className="text-cyan-500 w-4 h-4 md:w-6 md:h-6" />} 
+                icon={<Mail className="text-red-500 w-4 h-4 md:w-6 md:h-6" />} 
                 position="-bottom-8 left-1/4" 
-                delay={1} 
+                delay={1}
+                href="mailto:vikram1840@gmail.com"
               />
             </div>
           </motion.div>

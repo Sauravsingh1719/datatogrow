@@ -1,9 +1,18 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
+import * as React from "react"
+import { motion, useInView } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
-import { Star, Quote } from 'lucide-react'
+import { Star, Quote, Loader2 } from 'lucide-react'
+import Autoplay from "embla-carousel-autoplay"
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 interface Testimonial {
   _id: string;
@@ -21,6 +30,14 @@ export default function Testimonials() {
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [loading, setLoading] = useState(true)
+
+  const plugin = React.useRef(
+    Autoplay({ 
+      delay: 3000, 
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+    })
+  )
 
   useEffect(() => {
     fetchTestimonials()
@@ -43,10 +60,10 @@ export default function Testimonials() {
 
   if (loading) {
     return (
-      <section ref={ref} className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700">
+      <section ref={ref} className="py-12 md:py-20 bg-gradient-to-br from-blue-600 to-indigo-700">
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+            <Loader2 className="animate-spin h-12 w-12 text-white mx-auto" />
             <p className="mt-4 text-blue-100">Loading testimonials...</p>
           </div>
         </div>
@@ -55,15 +72,15 @@ export default function Testimonials() {
   }
 
   return (
-    <section ref={ref} className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700">
+    <section ref={ref} className="py-12 md:py-20 bg-gradient-to-br from-blue-600 to-indigo-700 overflow-hidden">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
         >
-          <h2 className="text-4xl font-bold text-white mb-4">Client Testimonials</h2>
-          <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Client Testimonials</h2>
+          <p className="text-base md:text-xl text-blue-100 max-w-2xl mx-auto">
             What industry leaders say about working with me
           </p>
         </motion.div>
@@ -73,41 +90,63 @@ export default function Testimonials() {
             <p>No testimonials available yet.</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={testimonial._id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                transition={{ delay: index * 0.2 }}
-                className="bg-white rounded-2xl p-8 shadow-xl relative"
-              >
-                {}
-                <div className="absolute -top-4 -left-4 bg-blue-600 p-3 rounded-full">
-                  <Quote className="text-white" size={24} />
-                </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="w-full max-w-6xl mx-auto px-4"
+          >
+            <Carousel
+              plugins={[plugin.current]}
+              className="w-full"
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+            >
+              {}
+              <CarouselContent className="-ml-4 items-stretch">
+                {testimonials.map((testimonial) => (
+                  <CarouselItem key={testimonial._id} className="pl-4 md:basis-1/2 lg:basis-1/3 h-auto">
+                    {}
+                    <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl relative h-full flex flex-col justify-between">
+                      <div>
+                        {}
+                        <div className="absolute -top-4 -left-2 md:-left-4 bg-blue-600 p-3 rounded-full shadow-lg z-10">
+                          <Quote className="text-white w-5 h-5 md:w-6 md:h-6" />
+                        </div>
 
-                {}
-                <div className="flex gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="fill-yellow-400 text-yellow-400" size={20} />
-                  ))}
-                </div>
+                        {}
+                        <div className="flex gap-1 mb-4 mt-2">
+                          {[...Array(testimonial.rating)].map((_, i) => (
+                            <Star key={i} className="fill-yellow-400 text-yellow-400 w-4 h-4 md:w-5 md:h-5" />
+                          ))}
+                        </div>
 
-                {}
-                <p className="text-gray-700 mb-6 leading-relaxed italic">
-                  "{testimonial.content}"
-                </p>
+                        {}
+                        <p className="text-gray-700 mb-6 leading-relaxed italic text-sm md:text-base">
+                          "{testimonial.content}"
+                        </p>
+                      </div>
 
-                {}
-                <div>
-                  <div className="font-bold text-gray-900">{testimonial.name}</div>
-                  <div className="text-blue-600 text-sm">{testimonial.position}</div>
-                  <div className="text-sm text-gray-500">{testimonial.company}</div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                      {}
+                      <div className="border-t border-gray-100 pt-4 mt-auto">
+                        <div className="font-bold text-gray-900 text-base md:text-lg">{testimonial.name}</div>
+                        <div className="text-blue-600 text-sm font-medium">{testimonial.position}</div>
+                        <div className="text-xs md:text-sm text-gray-500">{testimonial.company}</div>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              
+              {}
+              <div className="hidden md:block">
+                <CarouselPrevious className="bg-white/10 hover:bg-white/20 text-white border-white/20 -left-12" />
+                <CarouselNext className="bg-white/10 hover:bg-white/20 text-white border-white/20 -right-12" />
+              </div>
+            </Carousel>
+          </motion.div>
         )}
       </div>
     </section>
