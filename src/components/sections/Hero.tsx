@@ -67,7 +67,8 @@ const StatCard: React.FC<StatCardProps> = ({ number, label }) => {
 const FloatingIcon: React.FC<FloatingIconProps> = ({ icon, position, delay }) => {
   return (
     <motion.div
-      className={`absolute ${position} z-20 bg-white p-3 rounded-full shadow-lg border border-slate-100`}
+      
+      className={`absolute ${position} z-20 bg-white p-2 md:p-3 rounded-full shadow-lg border border-slate-100`}
       animate={{
         y: [-10, 10, -10],
         rotate: [0, 5, -5, 0],
@@ -88,7 +89,7 @@ export default function App() {
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-white pt-[25%] md:pt-10 font-sans">
       
-      {}
+      {/* Background Grids */}
       <div className="absolute inset-0 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
         <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_800px_at_100%_200px,#7c3aed05,transparent)]" />
       </div>
@@ -97,10 +98,10 @@ export default function App() {
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           
-          {}
+          {/* Text Content */}
           <div className="text-left order-2 lg:order-1">
             
-            {}
+            {/* Status Badge */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -116,9 +117,9 @@ export default function App() {
               </div>
             </motion.div>
 
-            {}
+       
             <motion.h1 
-              className="text-5xl lg:text-7xl font-bold text-slate-900 tracking-tight mb-6 leading-[1.1]"
+              className="text-3xl md:text-5xl lg:text-7xl font-bold text-slate-900 tracking-tight mb-6 leading-[1.1]"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
@@ -129,9 +130,9 @@ export default function App() {
               </span>
             </motion.h1>
             
-            {}
+         
             <motion.p 
-              className="text-lg text-slate-600 mb-8 max-w-lg leading-relaxed"
+              className="text-sm md:text-lg text-slate-600 mb-8 max-w-lg leading-relaxed"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
@@ -139,26 +140,46 @@ export default function App() {
               Senior Data Analyst transforming complex datasets into <span className="text-slate-900 font-semibold">clear, actionable strategies</span>. I help forward-thinking companies unlock revenue through precision analytics.
             </motion.p>
 
-            {}
+         
             <motion.div 
               className="flex flex-col sm:flex-row gap-4 justify-start items-center mb-12"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
             >
-              <a href="/Vikram_Kumar_Resume.pdf" download className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full shadow-blue-900/20 shadow-lg hover:shadow-blue-900/30 transition-all">
-                  <Download className="mr-2 h-5 w-5" />
-                  Download Resume
+              <a href="/resume" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto h-10 px-8 text-lg rounded-full shadow-blue-900/20 shadow-lg hover:shadow-blue-900/30 transition-all">
+                  View Resume
                 </Button>
               </a>
-              <Button variant="outline" size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full border-slate-200 hover:border-blue-300 bg-white hover:bg-slate-50 text-slate-700">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full border-slate-200 hover:border-blue-300  hover:bg-slate-50 text-slate-700" disabled={true} hidden>
                 <Play className="mr-2 h-5 w-5 fill-slate-700" />
                 Watch Demo
               </Button>
+              
+              <div className='flex flex-row gap-3.5 w-full sm:w-auto'>
+                <a href="#projects" className="flex-1 sm:flex-none">
+                  {/* Updated Projects Button to Primary style */}
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:w-auto h-10 px-5 text-lg rounded-full shadow-blue-900/20 shadow-lg hover:shadow-blue-900/30 transition-all"
+                  >
+                    Projects
+                  </Button>
+                </a>
+                <a href="/blog" className="flex-1 sm:flex-none">
+                   {/* Updated Blogs Button to Primary style */}
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:w-auto h-10 px-5 text-lg rounded-full shadow-blue-900/20 shadow-lg hover:shadow-blue-900/30 transition-all"
+                  >
+                    Blogs
+                  </Button>
+                </a>
+              </div>
             </motion.div>
 
-            {}
+      
             <motion.div 
               className="grid grid-cols-3 gap-4 max-w-lg"
               initial={{ opacity: 0, y: 20 }}
@@ -171,25 +192,24 @@ export default function App() {
             </motion.div>
           </div>
 
-          {}
+          
           <motion.div 
             className="relative order-1 lg:order-2 flex justify-center lg:justify-end"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="relative w-full max-w-[500px] aspect-square">
+         
+            <div className="relative w-full max-w-[280px] md:max-w-[500px] aspect-square">
               
-              {}
+              {/* Background Shapes */}
               <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-indigo-50 rounded-[2.5rem] transform rotate-6 scale-105 z-0 border border-slate-100" />
               
-              {}
+              {/* Border */}
               <div className="absolute inset-0 border-2 border-slate-200 rounded-[2.5rem] transform -rotate-3 z-0" />
 
-              {}
+              {/* Main Image */}
               <div className="absolute inset-2 bg-slate-200 rounded-[2rem] overflow-hidden z-10 shadow-2xl">
-                 {}
-                 {}
                 <img 
                   src="/profile.jpeg" 
                   alt="Profile" 
@@ -197,19 +217,19 @@ export default function App() {
                 />
               </div>
 
-              {}
+              {/* Floating Icons */}
               <FloatingIcon 
-                icon={<PieChart className="text-blue-500" size={28} />} 
+                icon={<PieChart className="text-blue-500 w-5 h-5 md:w-7 md:h-7" />} 
                 position="-top-6 -left-6" 
                 delay={0} 
               />
               <FloatingIcon 
-                icon={<BarChart3 className="text-indigo-500" size={32} />} 
+                icon={<BarChart3 className="text-indigo-500 w-6 h-6 md:w-8 md:h-8" />} 
                 position="top-1/2 -right-10" 
                 delay={2} 
               />
               <FloatingIcon 
-                icon={<Database className="text-cyan-500" size={24} />} 
+                icon={<Database className="text-cyan-500 w-4 h-4 md:w-6 md:h-6" />} 
                 position="-bottom-8 left-1/4" 
                 delay={1} 
               />

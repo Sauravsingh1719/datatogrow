@@ -4,15 +4,25 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Menu, X, BarChart3 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { 
+  BarChart3, 
+  Home, 
+  User, 
+  Zap, 
+  Briefcase, 
+  FileText, 
+  Mail 
+} from 'lucide-react'
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const pathname = usePathname()
   const router = useRouter()
+
+  if (pathname === '/resume') {
+    return null;
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,12 +47,12 @@ export default function Navigation() {
   }, [pathname])
 
   const navItems = [
-    { name: 'Home', href: '/', id: 'home', type: 'page' },
-    { name: 'About', href: '#about', id: 'about', type: 'section' },
-    { name: 'Skills', href: '#skills', id: 'skills', type: 'section' },
-    { name: 'Projects', href: '#projects', id: 'projects', type: 'section' },
-    { name: 'Blog', href: '/blog', id: 'blog', type: 'page' },
-    { name: 'Contact', href: '/contact', id: 'contact', type: 'page' },
+    { name: 'Home', href: '/', id: 'home', type: 'page', icon: Home },
+    { name: 'About', href: '#about', id: 'about', type: 'section', icon: User },
+    { name: 'Skills', href: '#skills', id: 'skills', type: 'section', icon: Zap },
+    { name: 'Projects', href: '#projects', id: 'projects', type: 'section', icon: Briefcase },
+    { name: 'Blog', href: '/blog', id: 'blog', type: 'page', icon: FileText },
+    { name: 'Contact', href: '/contact', id: 'contact', type: 'page', icon: Mail },
   ]
 
   const handleNavigation = (item: typeof navItems[0]) => {
@@ -58,7 +68,6 @@ export default function Navigation() {
     } else {
       router.push(item.href)
     }
-    setIsMobileMenuOpen(false)
   }
 
   const isActive = (item: typeof navItems[0]) => {
@@ -70,33 +79,34 @@ export default function Navigation() {
   }
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-xl shadow-2xl shadow-blue-500/5 border-b border-gray-100' 
-          : 'bg-transparent'
-      }`}
-    >
-      <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center">
-          {/* Logo on the left */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-2 rounded-xl group-hover:scale-110 transition-transform">
-                <BarChart3 className="text-white" size={24} />
-              </div>
-              <div>
-                <div className="text-xl font-bold text-gray-900">Vikram</div>
-                <div className="text-xs text-gray-500 font-medium">Data Analyst</div>
-              </div>
-            </Link>
-          </div>
+    <>
+      {/* --- DESKTOP TOP NAVIGATION --- */}
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className={`fixed top-0 w-full z-40 transition-all duration-500 ${
+          isScrolled 
+            ? 'bg-white/95 backdrop-blur-xl shadow-sm border-b border-gray-100' 
+            : 'bg-transparent'
+        }`}
+      >
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center gap-3 group">
+                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-2 rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-blue-500/20">
+                  <BarChart3 className="text-white" size={24} />
+                </div>
+                <div>
+                  <div className="text-xl font-bold text-gray-900">Vikram</div>
+                  <div className="text-xs text-gray-500 font-medium">Data Analyst</div>
+                </div>
+              </Link>
+            </div>
 
-          {/* Centered Navigation Items for Desktop */}
-          <div className="flex-1 flex justify-center">
-            <div className="hidden md:flex items-center space-x-1 bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg">
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-1 bg-white/50 backdrop-blur-md rounded-2xl px-2 py-1.5 border border-white/20 shadow-sm">
               {navItems.map((item) => (
                 <button
                   key={item.name}
@@ -104,57 +114,73 @@ export default function Navigation() {
                   className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
                     isActive(item)
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                      : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
                   }`}
                 >
                   {item.name}
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* Right part - blank but reserving space for alignment with mobile menu button */}
-          <div className="flex-shrink-0 w-12 flex justify-end md:w-0">
-            {/* Mobile Menu Button - only visible on mobile */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </Button>
+            {/* Empty div to balance flex layout on desktop */}
+            <div className="hidden md:block w-[140px]"></div>
           </div>
         </div>
+      </motion.nav>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl mt-2 rounded-2xl shadow-2xl border border-gray-100 py-4"
-            >
-              <div className="flex flex-col space-y-2 px-4">
-                {navItems.map((item) => (
-                  <button
-                    key={item.name}
-                    onClick={() => handleNavigation(item)}
-                    className={`px-4 py-3 rounded-xl font-medium text-left transition-all duration-300 ${
-                      isActive(item)
-                        ? 'bg-blue-600 text-white shadow-lg'
-                        : 'text-gray-700 hover:bg-blue-50'
-                    }`}
+      {/* --- MOBILE BOTTOM DOCK (MacOS Style) --- */}
+      <div className="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-full px-4 max-w-sm">
+        <motion.div 
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          className="flex items-center justify-between bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl rounded-2xl px-4 py-3"
+        >
+          {navItems.map((item) => {
+            const active = isActive(item);
+            const Icon = item.icon;
+
+            return (
+              <motion.button
+                key={item.name}
+                onClick={() => handleNavigation(item)}
+                whileTap={{ scale: 0.8 }}
+                className="relative flex flex-col items-center gap-1 min-w-[3rem]"
+              >
+                {/* Active Indicator Dot */}
+                {active && (
+                  <motion.div
+                    layoutId="dock-dot"
+                    className="absolute -top-1 w-1 h-1 bg-blue-600 rounded-full"
+                  />
+                )}
+                
+                {/* Icon Container */}
+                <div 
+                  className={`p-2 rounded-xl transition-all duration-300 ${
+                    active 
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 -translate-y-2' 
+                      : 'text-gray-500 hover:bg-gray-100'
+                  }`}
+                >
+                  <Icon size={22} strokeWidth={active ? 2.5 : 2} />
+                </div>
+
+                {/* Label (Optional: Remove if you want just icons for cleaner look) */}
+                {active && (
+                  <motion.span 
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute -bottom-5 text-[10px] font-medium text-blue-600 whitespace-nowrap"
                   >
                     {item.name}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  </motion.span>
+                )}
+              </motion.button>
+            )
+          })}
+        </motion.div>
       </div>
-    </motion.nav>
+    </>
   )
 }

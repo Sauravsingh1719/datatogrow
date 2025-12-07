@@ -1,100 +1,47 @@
-
 'use client'
 
 import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
-import { useRef } from 'react'
-import { Mail, Calendar, ArrowRight } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import Link from 'next/link'
 
 export default function ContactCTA() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
-
   return (
-    <section id="contact" ref={ref} className="py-20 bg-white">
+    <section id="contact" className="py-10 border-t border-gray-100 bg-white">
       <div className="container mx-auto px-6">
+        
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          className="max-w-4xl mx-auto text-center"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 max-w-5xl mx-auto"
         >
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            Ready to Transform Your Data?
-          </h2>
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-            Let's discuss how data analytics can drive growth and efficiency for your business.
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-0 shadow-lg">
-                <CardContent className="p-8 text-center">
-                  <div className="bg-blue-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Mail className="text-blue-600" size={32} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Send a Message</h3>
-                  <p className="text-gray-600 mb-6">
-                    Get in touch to discuss your project requirements and goals.
-                  </p>
-                  <Button 
-                    onClick={() => window.location.href = '/contact'}
-                    className="bg-blue-600 hover:bg-blue-700 w-full"
-                  >
-                    Contact Me
-                    <ArrowRight size={16} className="ml-2" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
-              transition={{ delay: 0.4 }}
-            >
-              <Card className="bg-gradient-to-br from-indigo-50 to-purple-100 border-0 shadow-lg">
-                <CardContent className="p-8 text-center">
-                  <div className="bg-indigo-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Calendar className="text-indigo-600" size={32} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Schedule a Call</h3>
-                  <p className="text-gray-600 mb-6">
-                    Book a consultation to discuss your data analytics needs.
-                  </p>
-                  <Button 
-                    variant="outline"
-                    className="border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white w-full"
-                  >
-                    Schedule Now
-                    <ArrowRight size={16} className="ml-2" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+            
+          {}
+          <div className="text-center md:text-left">
+            <h2 className="text-2xl font-bold text-gray-900 mb-1 flex items-center justify-center md:justify-start gap-2 tracking-tight">
+              Have an idea in mind?
+              <Sparkles className="text-blue-500 w-5 h-5" />
+            </h2>
+            <p className="text-gray-500 text-base">
+              Let's simplify the complex and transform your data into growth.
+            </p>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ delay: 0.6 }}
-            className="bg-gray-50 rounded-2xl p-8"
-          >
-            <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              Prefer to start with a small project?
-            </h4>
-            <p className="text-gray-600 mb-4">
-              Let's begin with a data audit or a quick analysis to demonstrate value.
-            </p>
-            <Button variant="ghost" className="text-blue-600 hover:text-blue-700">
-              Explore Starter Packages →
-            </Button>
-          </motion.div>
+          {}
+          <div className="flex-shrink-0">
+            <Link href="/contact">
+              <Button 
+                size="lg" 
+                className="bg-gray-900 text-white hover:bg-blue-600 transition-all duration-300 font-medium px-8 h-11 rounded-full shadow-sm hover:shadow-lg hover:-translate-y-0.5"
+              >
+                Let's Connect
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+
         </motion.div>
       </div>
     </section>
