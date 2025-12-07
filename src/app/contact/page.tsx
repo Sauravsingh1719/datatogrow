@@ -104,21 +104,14 @@ export default function ContactPage() {
                     {
                       icon: Mail,
                       title: 'Email',
-                      content: 'Vikram@example.com',
-                      link: 'mailto:Vikram@example.com',
+                      content: 'vikram1840@gmail.com ',
+                      link: 'mailto:vikram1840@gmail.com ',
                       description: 'Send me an email anytime'
-                    },
-                    {
-                      icon: Phone,
-                      title: 'Phone',
-                      content: '+1 (555) 123-4567',
-                      link: 'tel:+15551234567',
-                      description: 'Mon-Fri from 9am to 6pm'
                     },
                     {
                       icon: MapPin,
                       title: 'Location',
-                      content: 'San Francisco, CA',
+                      content: 'Limassol, Cyprus ',
                       link: '#',
                       description: 'Available for remote work worldwide'
                     }
@@ -154,9 +147,9 @@ export default function ContactPage() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-4">
                     {[
-                      { icon: Linkedin, href: '#', label: 'LinkedIn', color: 'bg-blue-600' },
-                      { icon: Twitter, href: '#', label: 'Twitter', color: 'bg-sky-500' },
-                      { icon: Github, href: '#', label: 'GitHub', color: 'bg-gray-900' }
+                      { icon: Linkedin, href: 'https://www.linkedin.com/in/vikram1840/', label: 'LinkedIn', color: 'bg-blue-600' },
+                      { icon: Mail, href: 'mailto:vikram1840@gmail.com', label: 'Email', color: 'bg-sky-500' },
+                      { icon: Github, href: 'http://github.com/vikram1840', label: 'GitHub', color: 'bg-gray-900' }
                     ].map((social, index) => (
                       <a
                         key={index}

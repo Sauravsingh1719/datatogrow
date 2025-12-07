@@ -17,17 +17,16 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link href="/" className="text-2xl font-bold text-white mb-4 block">
-              Vikram
+              Vikram Kumar
             </Link>
             <p className="text-gray-400 mb-6 max-w-md">
               Transforming complex data into clear, actionable insights that drive business growth and innovation.
             </p>
             <div className="flex gap-4">
               {[
-                { icon: Linkedin, href: '#' },
-                { icon: Twitter, href: '#' },
-                { icon: Github, href: '#' },
-                { icon: Mail, href: 'mailto:Vikram@example.com' }
+                { icon: Linkedin, href: 'https://www.linkedin.com/in/vikram1840/' },
+                { icon: Github, href: 'http://github.com/vikram1840' },
+                { icon: Mail, href: 'mailto:vikram1840@gmail.com ' }
               ].map((social, index) => (
                 <a
                   key={index}
@@ -60,15 +59,14 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-lg mb-4">Get In Touch</h3>
             <div className="space-y-3 text-gray-400">
-              <p>Vikram@example.com</p>
-              <p>+1 (555) 123-4567</p>
-              <p>San Francisco, CA</p>
+              <p>vikram1840@gmail.com </p>
+              <p>Limassol, Cyprus </p>
             </div>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; {currentYear} Vikram. All rights reserved.</p>
+          <p>&copy; {currentYear} Vikram Kumar. All rights reserved.</p>
         </div>
       </div>
     </footer>
