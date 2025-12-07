@@ -1,8 +1,14 @@
 import Link from 'next/link'
 import { Linkedin, Twitter, Mail, Github } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const pathname = usePathname();
+
+   if (pathname === '/resume') {
+    return null;
+  }
 
   return (
     <footer className="bg-gray-900 text-white py-12">

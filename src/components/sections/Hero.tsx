@@ -224,7 +224,7 @@ export default function App() {
               
               {}
               <FloatingIcon 
-                icon={<Linkedin className="text-blue-600 w-6 h-6 md:w-8 md:h-8" />} 
+                icon={<Linkedin className="text-blue-500 w-4 h-4 md:w-6 md:h-6" />} 
                 position="top-1/2 -right-10" 
                 delay={2}
                 href="https://www.linkedin.com/in/vikram1840/" 
