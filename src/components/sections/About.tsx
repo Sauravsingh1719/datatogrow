@@ -3,8 +3,7 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import { useRef } from 'react'
-import { Award, Target, Users, TrendingUp } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { TrendingUp, Briefcase, Calendar, Building2 } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 
 export default function About() {
@@ -18,9 +17,29 @@ export default function About() {
     { name: 'Machine Learning', level: 85 },
   ]
 
+  const experience = [
+    {
+      period: '2023 - Present',
+      role: 'Senior Data Analyst',
+      company: 'TechFlow Analytics',
+      description: 'Leading predictive modeling initiatives and optimizing data pipelines for enterprise clients.'
+    },
+    {
+      period: '2021 - 2023',
+      role: 'Data Analyst',
+      company: 'Growth Metrics Inc.',
+      description: 'Spearheaded customer behavior analysis resulting in a 20% increase in retention rates.'
+    },
+    {
+      period: '2019 - 2021',
+      role: 'Junior Analyst',
+      company: 'DataStream Solutions',
+      description: 'Assisted in building automated dashboards and maintaining large-scale SQL databases.'
+    }
+  ]
+
   return (
     <section id="about" ref={ref} className="relative py-20 overflow-hidden bg-white">
-
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -28,13 +47,14 @@ export default function About() {
           transition={{ duration: 0.8 }}
           className="max-w-6xl mx-auto"
         >
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Text Content */}
+          <div className="grid lg:grid-cols-2 gap-16">
+            
+            {}
             <div>
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                className="mb-8"
+                className="mb-10"
               >
                 <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4 shadow-sm">
                   <TrendingUp size={16} />
@@ -50,12 +70,11 @@ export default function About() {
                 </p>
                 <p className="text-lg text-slate-600 mb-8 leading-relaxed">
                   I specialize in predictive modeling, data visualization, and building scalable 
-                  analytics solutions that have helped clients achieve an average of <span className="font-semibold text-blue-600">35% revenue growth</span> 
-                  and <span className="font-semibold text-blue-600">50% improvement</span> in operational efficiency.
+                  analytics solutions that have helped clients achieve an average of <span className="font-semibold text-blue-600">35% revenue growth</span>.
                 </p>
               </motion.div>
 
-              {/* Skills Progress */}
+              {}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -63,7 +82,7 @@ export default function About() {
                 className="space-y-6"
               >
                 <h3 className="text-xl font-semibold text-slate-900 mb-4">Core Competencies</h3>
-                {skills.map((skill, index) => (
+                {skills.map((skill) => (
                   <div key={skill.name} className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="font-medium text-slate-700">{skill.name}</span>
@@ -80,54 +99,56 @@ export default function About() {
               </motion.div>
             </div>
 
-            {/* Visual Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="grid grid-cols-2 gap-6"
-            >
-              {[
-                {
-                  icon: Target,
-                  title: 'Data Strategy',
-                  description: 'Aligning analytics with business objectives'
-                },
-                {
-                  icon: Award,
-                  title: 'Certified Pro',
-                  description: 'Advanced analytics certifications'
-                },
-                {
-                  icon: Users,
-                  title: 'Leadership',
-                  description: 'Cross-functional team management'
-                },
-                {
-                  icon: TrendingUp,
-                  title: 'High Growth',
-                  description: 'Results-oriented approach'
-                }
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                  transition={{ delay: 0.4 + index * 0.1 }}
-                >
-                  <Card className="h-full bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-blue-100 transition-all duration-300">
-                    <CardContent className="p-6 text-center flex flex-col items-center justify-center h-full">
-                      <div className="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                        <item.icon size={24} />
+            {}
+            <div className="relative pl-6 lg:pl-10">
+               <motion.h3 
+                initial={{ opacity: 0, x: 20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+                className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-2"
+              >
+                <Briefcase className="text-blue-600" />
+                Professional Journey
+              </motion.h3>
+
+              {}
+              <div className="relative border-l-2 border-slate-200 ml-3 space-y-12">
+                {experience.map((item, index) => (
+                  <motion.div 
+                    key={index}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+                    transition={{ delay: 0.4 + (index * 0.2), duration: 0.5 }}
+                    className="relative pl-8 group"
+                  >
+                    {}
+                    <span 
+                      className="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-4 border-white bg-blue-600 shadow-md group-hover:scale-125 group-hover:bg-blue-500 transition-all duration-300" 
+                    />
+                    
+                    {}
+                    <div className="bg-slate-50 hover:bg-white p-5 rounded-xl border border-slate-100 hover:border-blue-100 shadow-sm hover:shadow-md transition-all duration-300">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
+                        <h4 className="text-lg font-bold text-slate-900">{item.role}</h4>
+                        <span className="inline-flex items-center text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md border border-blue-100">
+                          <Calendar size={12} className="mr-1" />
+                          {item.period}
+                        </span>
                       </div>
-                      <h3 className="font-semibold text-slate-900 mb-2 leading-tight">{item.title}</h3>
-                      <p className="text-sm text-slate-500 leading-snug">{item.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </motion.div>
+                      
+                      <div className="flex items-center text-sm font-medium text-slate-700 mb-3">
+                        <Building2 size={14} className="mr-1.5 text-slate-400" />
+                        {item.company}
+                      </div>
+                      
+                      <p className="text-slate-600 text-sm leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </motion.div>
       </div>
