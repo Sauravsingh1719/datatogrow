@@ -95,8 +95,8 @@ export default function Navigation() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/" className="flex items-center gap-3 group">
-                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-2 rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-blue-500/20">
-                  <BarChart3 className="text-white" size={24} />
+                <div className="rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-blue-500/20">
+                  <img src="/logo.png" alt="Logo" width={35} height={35} />
                 </div>
                 <div>
                   <div className="text-xl font-bold text-gray-900">Vikram Kumar</div>
