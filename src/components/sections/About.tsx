@@ -19,21 +19,27 @@ export default function About() {
 
   const experience = [
     {
-      period: '2023 - Present',
+      period: 'Sept 2021 – Present',
       role: 'Senior Data Analyst',
-      company: 'TechFlow Analytics',
-      description: 'Leading predictive modeling initiatives and optimizing data pipelines for enterprise clients.'
+      company: 'ARAM MEEM Ltd (ToYou Delivery Platform) - Limassol, Cyprus',
+      description: 'Designed and analyzed A/B tests on subscription and promo strategies, using RFM-based segmentation to tailoroffers and measure impact on contribution margin and order volume in the tested groups.'
     },
     {
-      period: '2021 - 2023',
-      role: 'Data Analyst',
-      company: 'Growth Metrics Inc.',
-      description: 'Spearheaded customer behavior analysis resulting in a 20% increase in retention rates.'
+      period: 'Dec 2017 – Aug 2021',
+      role: 'Senior BI Developer',
+      company: 'Amdocs Ltd - Limassol, Cyprus',
+      description: 'Led a team of 10 BI analysts and migrated 250+ enterprise reports to cloud infrastructure improved speed, scalability and governance.'
     },
     {
-      period: '2019 - 2021',
-      role: 'Junior Analyst',
-      company: 'DataStream Solutions',
+      period: 'Jan 2015 – Dec 2017',
+      role: 'Senior BI Developer',
+      company: 'Amdocs Ltd. - Gurgaon, India',
+      description: 'Applied exploratory data analysis (EDA) on telecom network KPIs, doubling user throughput and reducing drop rate from 1% to 0.6%.'
+    },
+    {
+      period: 'Sept 2010 – Jan 2015',
+      role: 'Network Analyst',
+      company: 'Telecom - Bangalore, India',
       description: 'Assisted in building automated dashboards and maintaining large-scale SQL databases.'
     }
   ]

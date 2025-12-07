@@ -1,4 +1,3 @@
-// components/sections/Testimonials.tsx
 'use client'
 
 import { motion } from 'framer-motion'
@@ -32,7 +31,6 @@ export default function Testimonials() {
       const response = await fetch('/api/testimonials')
       if (response.ok) {
         const data: Testimonial[] = await response.json()
-        // Only show approved testimonials
         const approvedTestimonials = data.filter(testimonial => testimonial.approved)
         setTestimonials(approvedTestimonials)
       }
@@ -84,24 +82,24 @@ export default function Testimonials() {
                 transition={{ delay: index * 0.2 }}
                 className="bg-white rounded-2xl p-8 shadow-xl relative"
               >
-                {/* Quote Icon */}
+                {}
                 <div className="absolute -top-4 -left-4 bg-blue-600 p-3 rounded-full">
                   <Quote className="text-white" size={24} />
                 </div>
 
-                {/* Rating */}
+                {}
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star key={i} className="fill-yellow-400 text-yellow-400" size={20} />
                   ))}
                 </div>
 
-                {/* Content */}
+                {}
                 <p className="text-gray-700 mb-6 leading-relaxed italic">
                   "{testimonial.content}"
                 </p>
 
-                {/* Author */}
+                {}
                 <div>
                   <div className="font-bold text-gray-900">{testimonial.name}</div>
                   <div className="text-blue-600 text-sm">{testimonial.position}</div>
