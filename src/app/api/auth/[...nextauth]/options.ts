@@ -1,5 +1,8 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import dbConnect from '@/lib/dbConnect';
+import User from '@/models/User';
+import bcrypt from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -8,61 +11,60 @@ export const authOptions: NextAuthOptions = {
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        password: { label: 'Password', type: 'password' },
+        otp: { label: 'OTP', type: 'text' }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
+        await dbConnect();
+
+        if (!credentials?.email || !credentials?.password || !credentials?.otp) {
+          throw new Error('Missing credentials');
         }
 
-        const adminEmail = process.env.ADMIN_EMAILID;
-        const adminPassword = process.env.ADMIN_PASSWORD;
+        const user = await User.findOne({ email: credentials.email });
+        if (!user) throw new Error('User not found');
 
-        if (!adminEmail || !adminPassword) {
-          console.error('Admin credentials not configured');
-          return null;
-        }
+        const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
+        if (!isPasswordCorrect) throw new Error('Invalid Password');
 
-        if (credentials.email === adminEmail && credentials.password === adminPassword) {
-          return {
-            id: '1',
-            email: adminEmail,
-            name: 'Admin',
-            role: 'admin'
-          };
-        }
+        if (!user.otpToken || !user.otpExpires) throw new Error('OTP not generated');
+        
+        const isOtpExpired = new Date() > user.otpExpires;
+        if (isOtpExpired) throw new Error('OTP Expired');
 
-        return null;
+        const isOtpValid = await bcrypt.compare(credentials.otp, user.otpToken);
+        if (!isOtpValid) throw new Error('Invalid OTP');
+
+        user.otpToken = undefined;
+        user.otpExpires = undefined;
+        await user.save();
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          role: user.role
+        };
       }
     })
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
         token.role = user.role;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.name = token.name as string;
         session.user.role = token.role as string;
+        session.user.id = token.id as string;
       }
       return session;
     }
   },
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60,
-  },
-  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/admin/signin',
-    error: '/admin/signin'
   }
 };

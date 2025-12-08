@@ -3,23 +3,53 @@
 import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Eye, EyeOff, Lock, Mail, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Eye, EyeOff, Lock, Mail, AlertCircle, KeyRound, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-// 1. We move all the logic and UI into this inner component
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/admin';
 
+  const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleCredentialsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || 'Invalid credentials');
+        setLoading(false);
+        return;
+      }
+
+      setStep(2);
+      setLoading(false);
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -28,17 +58,18 @@ function SignInForm() {
       const result = await signIn('credentials', {
         email,
         password,
+        otp,
         redirect: false,
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        setError(result.error);
         setLoading(false);
       } else {
         router.push(callbackUrl);
       }
     } catch (error) {
-      setError('Something went wrong. Please try again.');
+      setError('Login failed. Please try again.');
       setLoading(false);
     }
   };
@@ -51,16 +82,27 @@ function SignInForm() {
       className="w-full max-w-md"
     >
       <div className="bg-white rounded-2xl shadow-xl p-8">
-        {/* Logo/Brand */}
+        
+        {}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full mb-4">
-            <Lock className="h-8 w-8 text-white" />
+            {step === 1 ? (
+              <Lock className="h-8 w-8 text-white" />
+            ) : (
+              <KeyRound className="h-8 w-8 text-white" />
+            )}
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Portal</h1>
-          <p className="text-gray-600 mt-2">Sign in to manage your portfolio</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {step === 1 ? 'Admin Portal' : 'Two-Factor Auth'}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {step === 1 
+              ? 'Sign in to manage your portfolio' 
+              : `Enter the code sent to ${email}`}
+          </p>
         </div>
 
-        {/* Error Alert */}
+        {}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
@@ -68,87 +110,127 @@ function SignInForm() {
           </div>
         )}
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-11 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                required
-                disabled={loading}
-              />
-            </div>
-          </div>
+        {}
+        <AnimatePresence mode="wait">
+          
+          {}
+          {step === 1 && (
+            <motion.form
+              key="step1"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              onSubmit={handleCredentialsSubmit}
+              className="space-y-6"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-11 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                    required
+                    disabled={loading}
+                    placeholder="admin@example.com"
+                  />
+                </div>
+              </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                required
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                    required
+                    disabled={loading}
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
                 disabled={loading}
-              />
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3.5 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md disabled:opacity-50"
+              >
+                {loading ? 'Verifying...' : 'Continue'}
+              </button>
+            </motion.form>
+          )}
+
+          {}
+          {step === 2 && (
+            <motion.form
+              key="step2"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              onSubmit={handleOtpSubmit}
+              className="space-y-6"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">One-Time Password</label>
+                <div className="relative">
+                  <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className="w-full pl-11 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors tracking-widest text-lg"
+                    required
+                    disabled={loading}
+                    placeholder="123456"
+                    maxLength={6}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3.5 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md disabled:opacity-50"
+              >
+                {loading ? 'Logging in...' : 'Verify & Login'}
+              </button>
+              
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                disabled={loading}
+                onClick={() => setStep(1)}
+                className="w-full text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-2"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                <ArrowLeft size={16} /> Back to Login
               </button>
-            </div>
-          </div>
+            </motion.form>
+          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3.5 rounded-lg transition-all duration-300 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
-          >
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                Signing in...
-              </div>
-            ) : (
-              'Sign In'
-            )}
-          </button>
-        </form>
+        </AnimatePresence>
 
-        {/* Demo Note */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <div className="text-center">
-            <Link 
-              href="/" 
-              className="inline-block mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium"
-            >
-              ← Back to portfolio
-            </Link>
-          </div>
+        {}
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+          <Link href="/" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+            ← Back to portfolio
+          </Link>
         </div>
+
       </div>
     </motion.div>
   );
 }
 
-// 2. This is the fallback UI shown while search params are loading
 function SignInFallback() {
   return (
     <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 h-[500px] flex items-center justify-center">
@@ -157,7 +239,6 @@ function SignInFallback() {
   );
 }
 
-// 3. The default export now wraps the Form in Suspense
 export default function AdminSignIn() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 p-4">
