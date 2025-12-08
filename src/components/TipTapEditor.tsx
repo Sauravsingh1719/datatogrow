@@ -22,6 +22,7 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Link from "@tiptap/extension-link";
 import { Extension } from "@tiptap/core";
+import { uploadImage } from "@/app/actions";
 
 import { Toggle } from "@/components/ui/toggle";
 import {
@@ -57,11 +58,14 @@ import {
   Heading6,
   CheckSquareIcon,
   MinusIcon,
+  CheckIcon,
+  MoveLeftIcon,
+  MoveRightIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ReactNode, useState, useRef } from "react";
+import { ReactNode, useState, useRef, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -79,6 +83,91 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+const ResizableImage = Image.extend({
+  name: 'image',
+  
+  addAttributes() {
+    return {
+      src: {
+        default: null,
+      },
+      alt: {
+        default: null,
+      },
+      title: {
+        default: null,
+      },
+      width: {
+        default: null,
+        parseHTML: element => element.getAttribute('width') || element.style.width || null,
+        renderHTML: attributes => {
+          if (!attributes.width) {
+            return {}
+          }
+          return {
+            width: attributes.width,
+            style: `width: ${attributes.width};`,
+          }
+        },
+      },
+      height: {
+        default: null,
+        parseHTML: element => element.getAttribute('height') || element.style.height || null,
+        renderHTML: attributes => {
+          if (!attributes.height) {
+            return {}
+          }
+          return {
+            height: attributes.height,
+            style: `height: ${attributes.height};`,
+          }
+        },
+      },
+      align: {
+        default: 'left',
+        parseHTML: element => {
+          const align = element.getAttribute('data-align') || element.style.float || element.style.textAlign || 'left';
+          return align === 'none' ? 'left' : align;
+        },
+        renderHTML: attributes => {
+          const align = attributes.align || 'left';
+          let style = '';
+          
+          if (align === 'left') {
+            style = 'float: left; margin: 0 1rem 1rem 0; max-width: 100%;';
+          } else if (align === 'right') {
+            style = 'float: right; margin: 0 0 1rem 1rem; max-width: 100%;';
+          } else if (align === 'center') {
+            style = 'display: block; margin: 1rem auto; max-width: 100%;';
+          } else {
+            style = 'max-width: 100%;';
+          }
+          
+          return {
+            'data-align': align,
+            style: style,
+          };
+        },
+      },
+    }
+  },
+  
+  addCommands() {
+    return {
+      setImage: (options) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs: options,
+        })
+      },
+      setImageAlign: (align) => ({ chain }) => {
+        return chain()
+          .updateAttributes('image', { align })
+          .run()
+      },
+    }
+  },
+})
 
 const FontSizeExtension = Extension.create({
   name: 'fontSize',
@@ -207,12 +296,15 @@ const EnhancedTiptapEditor = ({
       FontSizeExtension,
       Color,
       Highlight.configure({ multicolor: true }),
-      Image.configure({
+      ResizableImage.configure({
         inline: true,
         allowBase64: true,
+        HTMLAttributes: {
+          class: 'rounded-lg',
+        },
       }),
       TextAlign.configure({
-        types: ['heading', 'paragraph', 'image'],
+        types: ['heading', 'paragraph'],
         alignments: ['left', 'center', 'right', 'justify'],
         defaultAlignment: 'left',
       }),
@@ -250,24 +342,42 @@ const EnhancedTiptapEditor = ({
     const file = e.target.files?.[0];
     if (!file || !editor) return;
 
-    setIsUploading(true); 
+    setIsUploading(true);
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("image", file);
 
     try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const result: any = await uploadImage(formData);
 
-      if (!response.ok) {
-        throw new Error("Upload failed");
+      if (result?.secure_url) {
+        const img = new window.Image();
+        img.src = result.secure_url;
+        
+        img.onload = () => {
+          const maxWidth = 400;
+          const width = Math.min(img.naturalWidth, maxWidth);
+          
+          editor.chain().focus().setImage({ 
+            src: result.secure_url,
+            width: `${width}px`,
+            height: 'auto',
+            align: 'left'
+          }).run();
+        };
+        
+        img.onerror = () => {
+          editor.chain().focus().setImage({ 
+            src: result.secure_url,
+            width: '400px',
+            height: 'auto',
+            align: 'left'
+          }).run();
+        };
+      } else {
+        throw new Error("Failed to get image URL");
       }
 
-      const data = await response.json();
-      
-      editor.chain().focus().setImage({ src: data.url }).run();
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("Failed to upload image. Please try again.");
@@ -303,6 +413,540 @@ const EnhancedTiptapEditor = ({
 };
 
 export default EnhancedTiptapEditor;
+
+const ImageResizeControls = ({ editor }: { editor: Editor }) => {
+  const [width, setWidth] = useState('');
+  const [height, setHeight] = useState('');
+  const [imagePos, setImagePos] = useState<number | null>(null);
+  const [align, setAlign] = useState('left');
+  
+  useEffect(() => {
+    const updateSelection = () => {
+      const { from, to } = editor.state.selection;
+      let selectedImagePos = null;
+      let selectedImageNode = null;
+      
+      editor.state.doc.nodesBetween(from, to, (node, pos) => {
+        if (node.type.name === 'image') {
+          selectedImagePos = pos;
+          selectedImageNode = node;
+          return false;
+        }
+        return true;
+      });
+      
+      if (selectedImageNode) {
+        setImagePos(selectedImagePos);
+        setWidth(selectedImageNode.attrs.width || '');
+        setHeight(selectedImageNode.attrs.height || '');
+        setAlign(selectedImageNode.attrs.align || 'left');
+      } else {
+        setImagePos(null);
+        setWidth('');
+        setHeight('');
+        setAlign('left');
+      }
+    };
+    
+    updateSelection();
+    
+    editor.on('selectionUpdate', updateSelection);
+    
+    return () => {
+      editor.off('selectionUpdate', updateSelection);
+    };
+  }, [editor]);
+  
+  if (imagePos === null) return null;
+  
+  const handleApply = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (imagePos === null) return;
+    
+    editor.chain().setNodeSelection(imagePos).focus().run();
+    
+    const node = editor.state.doc.nodeAt(imagePos);
+    if (!node) return;
+    
+    const currentAttrs = node.attrs;
+    
+    const newAttrs: any = { ...currentAttrs };
+    
+    if (width.trim()) {
+      let widthValue = width.trim();
+      if (!widthValue.includes('px') && !widthValue.includes('%')) {
+        widthValue = `${widthValue}px`;
+      }
+      newAttrs.width = widthValue;
+    } else {
+      newAttrs.width = null;
+    }
+    
+    if (height.trim()) {
+      let heightValue = height.trim();
+      if (heightValue !== 'auto' && !heightValue.includes('px') && !heightValue.includes('%')) {
+        heightValue = `${heightValue}px`;
+      }
+      newAttrs.height = heightValue;
+    } else {
+      newAttrs.height = null;
+    }
+    
+    editor.chain()
+      .setNodeSelection(imagePos)
+      .updateAttributes('image', newAttrs)
+      .run();
+  };
+  
+  const handleReset = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (imagePos === null) return;
+    
+    editor.chain()
+      .setNodeSelection(imagePos)
+      .updateAttributes('image', {
+        width: null,
+        height: null,
+        align: 'left'
+      })
+      .run();
+    
+    setWidth('');
+    setHeight('');
+    setAlign('left');
+  };
+  
+  const handleAlign = (alignment: string) => {
+    if (imagePos === null) return;
+    
+    editor.chain()
+      .setNodeSelection(imagePos)
+      .setImageAlign(alignment)
+      .run();
+    
+    setAlign(alignment);
+  };
+  
+  return (
+    <div className="flex items-center gap-2 p-2 border-t bg-gray-50">
+      <span className="text-sm font-medium whitespace-nowrap">Image Options:</span>
+      
+      <div className="flex items-center gap-2">
+        {}
+        <div className="flex items-center gap-1">
+          <span className="text-sm">Align:</span>
+          <div className="flex">
+            <Button 
+              type="button"
+              size="sm" 
+              variant={align === 'left' ? "default" : "outline"}
+              onClick={() => handleAlign('left')}
+              className="h-8 px-2 rounded-r-none border-r-0"
+              title="Align left with text wrapping"
+            >
+              <MoveLeftIcon className="h-4 w-4" />
+            </Button>
+            <Button 
+              type="button"
+              size="sm" 
+              variant={align === 'center' ? "default" : "outline"}
+              onClick={() => handleAlign('center')}
+              className="h-8 px-2 rounded-none border-x-0"
+              title="Center (no text wrapping)"
+            >
+              <AlignCenterIcon className="h-4 w-4" />
+            </Button>
+            <Button 
+              type="button"
+              size="sm" 
+              variant={align === 'right' ? "default" : "outline"}
+              onClick={() => handleAlign('right')}
+              className="h-8 px-2 rounded-l-none border-l-0"
+              title="Align right with text wrapping"
+            >
+              <MoveRightIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        
+        <Separator orientation="vertical" className="h-6" />
+        
+        {}
+        <div className="flex items-center gap-1">
+          <span className="text-sm">Size:</span>
+          <div className="flex items-center gap-1">
+            <Input
+              type="text"
+              value={width}
+              onChange={(e) => setWidth(e.target.value)}
+              placeholder="Width"
+              className="w-16 h-8 text-sm"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleApply(e as any);
+                }
+              }}
+            />
+            <span className="text-sm mx-1">×</span>
+            <Input
+              type="text"
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
+              placeholder="Height"
+              className="w-16 h-8 text-sm"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleApply(e as any);
+                }
+              }}
+            />
+          </div>
+        </div>
+        
+        <Button 
+          type="button"
+          size="sm" 
+          variant="default"
+          onClick={handleApply}
+          className="h-8 px-3"
+        >
+          Apply
+        </Button>
+        
+        <Button 
+          type="button"
+          size="sm" 
+          variant="outline"
+          onClick={handleReset}
+          className="h-8 px-3"
+        >
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+const EnhancedToolBar = ({ editor, fileInputRef }: { editor: Editor; fileInputRef: React.RefObject<HTMLInputElement> }) => {
+  const [isImageSelected, setIsImageSelected] = useState(false);
+  
+  useEffect(() => {
+    const updateSelection = () => {
+      const { from, to } = editor.state.selection;
+      let foundImage = false;
+      
+      editor.state.doc.nodesBetween(from, to, (node) => {
+        if (node.type.name === 'image') {
+          foundImage = true;
+          return false;
+        }
+        return true;
+      });
+      
+      setIsImageSelected(foundImage);
+    };
+    
+    updateSelection();
+    
+    editor.on('selectionUpdate', updateSelection);
+    
+    return () => {
+      editor.off('selectionUpdate', updateSelection);
+    };
+  }, [editor]);
+  
+  const editorState = useEditorState({
+    editor,
+    selector: (ctx) => {
+      return {
+        isBold: ctx.editor.isActive("bold") ?? false,
+        isItalic: ctx.editor.isActive("italic") ?? false,
+        isUnderline: ctx.editor.isActive("underline") ?? false,
+        isStrike: ctx.editor.isActive("strike") ?? false,
+        isCode: ctx.editor.isActive("code") ?? false,
+        isHighlight: ctx.editor.isActive("highlight") ?? false,
+        isBulletList: ctx.editor.isActive("bulletList") ?? false,
+        isOrderedList: ctx.editor.isActive("orderedList") ?? false,
+        isBlockquote: ctx.editor.isActive("blockquote") ?? false,
+        isLink: ctx.editor.isActive("link") ?? false,
+        canRedo: editor.can().redo(),
+        canUndo: editor.can().undo(),
+        isHeading1: ctx.editor.isActive("heading", { level: 1 }) ?? false,
+        isHeading2: ctx.editor.isActive("heading", { level: 2 }) ?? false,
+        isHeading3: ctx.editor.isActive("heading", { level: 3 }) ?? false,
+        isHeading4: ctx.editor.isActive("heading", { level: 4 }) ?? false,
+        isHeading5: ctx.editor.isActive("heading", { level: 5 }) ?? false,
+        isHeading6: ctx.editor.isActive("heading", { level: 6 }) ?? false,
+        isParagraph: ctx.editor.isActive("paragraph") ?? false,
+        isTaskList: ctx.editor.isActive("taskList") ?? false,
+        textAlign: ctx.editor.isActive({ textAlign: 'left' }) ? 'left' :
+                  ctx.editor.isActive({ textAlign: 'center' }) ? 'center' :
+                  ctx.editor.isActive({ textAlign: 'right' }) ? 'right' :
+                  ctx.editor.isActive({ textAlign: 'justify' }) ? 'justify' : 'left',
+      };
+    },
+  });
+
+  const handleHeadingChange = (value: string) => {
+    if (value === "paragraph") {
+      editor.chain().focus().setParagraph().run();
+    } else {
+      const level = Number.parseInt(value.replace("heading", "")) as 1 | 2 | 3 | 4 | 5 | 6;
+      editor.chain().focus().setHeading({ level }).run();
+    }
+  };
+
+  const copyToClipboard = async () => {
+    const html = editor.getHTML();
+    await navigator.clipboard.writeText(html);
+  };
+  
+  const resetFormatting = () => {
+    editor.chain().focus().clearNodes().unsetAllMarks().run();
+  };
+
+  return (
+    <div className="bg-background sticky top-0 z-10 border-b">
+      {}
+      <div className="flex flex-wrap items-center gap-1 p-2">
+        <Select
+          onValueChange={handleHeadingChange}
+          value={
+            editorState.isHeading1 ? "heading1"
+              : editorState.isHeading2 ? "heading2"
+              : editorState.isHeading3 ? "heading3"
+              : editorState.isHeading4 ? "heading4"
+              : editorState.isHeading5 ? "heading5"
+              : editorState.isHeading6 ? "heading6"
+              : "paragraph"
+          }
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Paragraph" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="paragraph">Paragraph</SelectItem>
+            <SelectItem value="heading1">H1 Heading 1</SelectItem>
+            <SelectItem value="heading2">H2 Heading 2</SelectItem>
+            <SelectItem value="heading3">H3 Heading 3</SelectItem>
+            <SelectItem value="heading4">H4 Heading 4</SelectItem>
+            <SelectItem value="heading5">H5 Heading 5</SelectItem>
+            <SelectItem value="heading6">H6 Heading 6</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        <Toggle
+          size="sm"
+          pressed={editorState.isBold}
+          onPressedChange={() => editor.chain().focus().toggleBold().run()}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <BoldIcon className="h-4 w-4" />
+        </Toggle>
+
+        <Toggle
+          size="sm"
+          pressed={editorState.isItalic}
+          onPressedChange={() => editor.chain().focus().toggleItalic().run()}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <ItalicIcon className="h-4 w-4" />
+        </Toggle>
+        
+        <Toggle
+          size="sm"
+          pressed={editorState.isUnderline}
+          onPressedChange={() => editor.chain().focus().toggleUnderline().run()}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <UnderlineIcon className="h-4 w-4" />
+        </Toggle>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        <ColorPicker editor={editor} type="text">
+          <Button 
+            size="sm" 
+            variant="outline"
+            onMouseDown={(e) => e.preventDefault()}
+          >
+            <PaletteIcon className="h-4 w-4" />
+          </Button>
+        </ColorPicker>
+
+        <ColorPicker editor={editor} type="highlight">
+          <Button 
+            size="sm" 
+            variant="outline"
+            onMouseDown={(e) => e.preventDefault()}
+          >
+            <HighlighterIcon className="h-4 w-4" />
+          </Button>
+        </ColorPicker>
+
+        <FontSizePicker editor={editor} />
+
+        <Separator orientation="vertical" className="h-6" />
+
+        <Toggle
+          size="sm"
+          pressed={editorState.isBulletList}
+          onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <ListIcon className="h-4 w-4" />
+        </Toggle>
+
+        <Toggle
+          size="sm"
+          pressed={editorState.isOrderedList}
+          onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <ListOrderedIcon className="h-4 w-4" />
+        </Toggle>
+        
+        <Separator orientation="vertical" className="h-6" />
+
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => fileInputRef.current?.click()}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <ImageIcon className="h-4 w-4" />
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {editorState.textAlign === 'center' && <AlignCenterIcon className="h-4 w-4" />}
+              {editorState.textAlign === 'right' && <AlignRightIcon className="h-4 w-4" />}
+              {editorState.textAlign === 'justify' && <AlignJustifyIcon className="h-4 w-4" />}
+              {editorState.textAlign === 'left' && <AlignLeftIcon className="h-4 w-4" />}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem 
+              onClick={() => editor.chain().focus().setTextAlign('left').run()}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <AlignLeftIcon className="h-4 w-4 mr-2" />
+              Align Left
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => editor.chain().focus().setTextAlign('center').run()}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <AlignCenterIcon className="h-4 w-4 mr-2" />
+              Align Center
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => editor.chain().focus().setTextAlign('right').run()}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <AlignRightIcon className="h-4 w-4 mr-2" />
+              Align Right
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <AlignJustifyIcon className="h-4 w-4 mr-2" />
+              Justify
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <PlusIcon className="h-4 w-4" />
+              More
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem 
+              onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <CodeIcon className="h-4 w-4 mr-2" />
+              Code Block
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={copyToClipboard}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <ClipboardIcon className="h-4 w-4 mr-2" />
+              Copy to Clipboard
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <AnchorIcon className="h-4 w-4 mr-2" />
+              Copy Anchor Link
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={resetFormatting}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <Trash2Icon className="h-4 w-4 mr-2" />
+              Reset All Formatting
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          onClick={() => editor.chain().focus().undo().run()}
+          disabled={!editorState.canUndo}
+          aria-label="Undo"
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <UndoIcon className="h-4 w-4" />
+        </Button>
+
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          onClick={() => editor.chain().focus().redo().run()}
+          disabled={!editorState.canRedo}
+          aria-label="Redo"
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <RedoIcon className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {}
+      {isImageSelected && <ImageResizeControls editor={editor} />}
+    </div>
+  );
+};
+
+
 
 function LinkComponent({
   editor,
@@ -494,288 +1138,6 @@ function FontSizePicker({ editor }: { editor: Editor }) {
     </DropdownMenu>
   );
 }
-
-const EnhancedToolBar = ({ editor, fileInputRef }: { editor: Editor; fileInputRef: React.RefObject<HTMLInputElement> }) => {
-  const editorState = useEditorState({
-    editor,
-    selector: (ctx) => {
-      return {
-        isBold: ctx.editor.isActive("bold") ?? false,
-        isItalic: ctx.editor.isActive("italic") ?? false,
-        isUnderline: ctx.editor.isActive("underline") ?? false,
-        isStrike: ctx.editor.isActive("strike") ?? false,
-        isCode: ctx.editor.isActive("code") ?? false,
-        isHighlight: ctx.editor.isActive("highlight") ?? false,
-        isBulletList: ctx.editor.isActive("bulletList") ?? false,
-        isOrderedList: ctx.editor.isActive("orderedList") ?? false,
-        isBlockquote: ctx.editor.isActive("blockquote") ?? false,
-        isLink: ctx.editor.isActive("link") ?? false,
-        canRedo: editor.can().redo(),
-        canUndo: editor.can().undo(),
-        isHeading1: ctx.editor.isActive("heading", { level: 1 }) ?? false,
-        isHeading2: ctx.editor.isActive("heading", { level: 2 }) ?? false,
-        isHeading3: ctx.editor.isActive("heading", { level: 3 }) ?? false,
-        isHeading4: ctx.editor.isActive("heading", { level: 4 }) ?? false,
-        isHeading5: ctx.editor.isActive("heading", { level: 5 }) ?? false,
-        isHeading6: ctx.editor.isActive("heading", { level: 6 }) ?? false,
-        isParagraph: ctx.editor.isActive("paragraph") ?? false,
-        isTaskList: ctx.editor.isActive("taskList") ?? false,
-        textAlign: ctx.editor.isActive({ textAlign: 'left' }) ? 'left' :
-                  ctx.editor.isActive({ textAlign: 'center' }) ? 'center' :
-                  ctx.editor.isActive({ textAlign: 'right' }) ? 'right' :
-                  ctx.editor.isActive({ textAlign: 'justify' }) ? 'justify' : 'left',
-      };
-    },
-  });
-
-  const handleHeadingChange = (value: string) => {
-    if (value === "paragraph") {
-      editor.chain().focus().setParagraph().run();
-    } else {
-      const level = Number.parseInt(value.replace("heading", "")) as 1 | 2 | 3 | 4 | 5 | 6;
-      editor.chain().focus().setHeading({ level }).run();
-    }
-  };
-
-  const copyToClipboard = async () => {
-    const html = editor.getHTML();
-    await navigator.clipboard.writeText(html);
-  };
-  
-  const resetFormatting = () => {
-    editor.chain().focus().clearNodes().unsetAllMarks().run();
-  };
-
-  return (
-    <div className="bg-background sticky top-0 z-10 flex flex-wrap items-center gap-1 border-b p-2">
-      <Select
-        onValueChange={handleHeadingChange}
-        value={
-          editorState.isHeading1 ? "heading1"
-            : editorState.isHeading2 ? "heading2"
-            : editorState.isHeading3 ? "heading3"
-            : editorState.isHeading4 ? "heading4"
-            : editorState.isHeading5 ? "heading5"
-            : editorState.isHeading6 ? "heading6"
-            : "paragraph"
-        }
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Paragraph" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="paragraph">Paragraph</SelectItem>
-          <SelectItem value="heading1">H1 Heading 1</SelectItem>
-          <SelectItem value="heading2">H2 Heading 2</SelectItem>
-          <SelectItem value="heading3">H3 Heading 3</SelectItem>
-          <SelectItem value="heading4">H4 Heading 4</SelectItem>
-          <SelectItem value="heading5">H5 Heading 5</SelectItem>
-          <SelectItem value="heading6">H6 Heading 6</SelectItem>
-        </SelectContent>
-      </Select>
-
-      <Separator orientation="vertical" className="h-6" />
-
-      <Toggle
-        size="sm"
-        pressed={editorState.isBold}
-        onPressedChange={() => editor.chain().focus().toggleBold().run()}
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <BoldIcon className="h-4 w-4" />
-      </Toggle>
-
-      <Toggle
-        size="sm"
-        pressed={editorState.isItalic}
-        onPressedChange={() => editor.chain().focus().toggleItalic().run()}
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <ItalicIcon className="h-4 w-4" />
-      </Toggle>
-      
-      <Toggle
-        size="sm"
-        pressed={editorState.isUnderline}
-        onPressedChange={() => editor.chain().focus().toggleUnderline().run()}
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <UnderlineIcon className="h-4 w-4" />
-      </Toggle>
-
-      <Separator orientation="vertical" className="h-6" />
-
-      <ColorPicker editor={editor} type="text">
-        <Button 
-          size="sm" 
-          variant="outline"
-          onMouseDown={(e) => e.preventDefault()}
-        >
-          <PaletteIcon className="h-4 w-4" />
-        </Button>
-      </ColorPicker>
-
-      <ColorPicker editor={editor} type="highlight">
-        <Button 
-          size="sm" 
-          variant="outline"
-          onMouseDown={(e) => e.preventDefault()}
-        >
-          <HighlighterIcon className="h-4 w-4" />
-        </Button>
-      </ColorPicker>
-
-      <FontSizePicker editor={editor} />
-
-      <Separator orientation="vertical" className="h-6" />
-
-      <Toggle
-        size="sm"
-        pressed={editorState.isBulletList}
-        onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <ListIcon className="h-4 w-4" />
-      </Toggle>
-
-      <Toggle
-        size="sm"
-        pressed={editorState.isOrderedList}
-        onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <ListOrderedIcon className="h-4 w-4" />
-      </Toggle>
-      
-      <Separator orientation="vertical" className="h-6" />
-
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        onClick={() => fileInputRef.current?.click()}
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <ImageIcon className="h-4 w-4" />
-      </Button>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            size="sm" 
-            variant="outline"
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            {editorState.textAlign === 'center' && <AlignCenterIcon className="h-4 w-4" />}
-            {editorState.textAlign === 'right' && <AlignRightIcon className="h-4 w-4" />}
-            {editorState.textAlign === 'justify' && <AlignJustifyIcon className="h-4 w-4" />}
-            {editorState.textAlign === 'left' && <AlignLeftIcon className="h-4 w-4" />}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem 
-            onClick={() => editor.chain().focus().setTextAlign('left').run()}
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            <AlignLeftIcon className="h-4 w-4 mr-2" />
-            Align Left
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={() => editor.chain().focus().setTextAlign('center').run()}
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            <AlignCenterIcon className="h-4 w-4 mr-2" />
-            Align Center
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={() => editor.chain().focus().setTextAlign('right').run()}
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            <AlignRightIcon className="h-4 w-4 mr-2" />
-            Align Right
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={() => editor.chain().focus().setTextAlign('justify').run()}
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            <AlignJustifyIcon className="h-4 w-4 mr-2" />
-            Justify
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <Separator orientation="vertical" className="h-6" />
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            size="sm" 
-            variant="outline"
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            <PlusIcon className="h-4 w-4" />
-            More
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem 
-            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            <CodeIcon className="h-4 w-4 mr-2" />
-            Code Block
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={copyToClipboard}
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            <ClipboardIcon className="h-4 w-4 mr-2" />
-            Copy to Clipboard
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            <AnchorIcon className="h-4 w-4 mr-2" />
-            Copy Anchor Link
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={resetFormatting}
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            <Trash2Icon className="h-4 w-4 mr-2" />
-            Reset All Formatting
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <Separator orientation="vertical" className="h-6" />
-
-      <Button
-        type="button"
-        size="sm"
-        variant="ghost"
-        onClick={() => editor.chain().focus().undo().run()}
-        disabled={!editorState.canUndo}
-        aria-label="Undo"
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <UndoIcon className="h-4 w-4" />
-      </Button>
-
-      <Button
-        type="button"
-        size="sm"
-        variant="ghost"
-        onClick={() => editor.chain().focus().redo().run()}
-        disabled={!editorState.canRedo}
-        aria-label="Redo"
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <RedoIcon className="h-4 w-4" />
-      </Button>
-    </div>
-  );
-};
 
 function EnhancedBubbleMenu({ editor }: { editor: Editor }) {
   const editorState = useEditorState({
