@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You for Contacting DataToGrow</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+        }
+        .confirmation {
+            background: #f0f9ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #3b82f6;
+        }
+        .next-steps {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .step-number {
+            background: #3b82f6;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .contact-info {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            border: 1px solid #e2e8f0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .highlight {
+            background: linear-gradient(120deg, #dbeafe 0%, #dbeafe 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="margin: 0; font-size: 28px;">Thank You, {{name}}!</h1>
+        <p style="margin: 10px 0 0; opacity: 0.9; font-size: 18px;">Your Project Inquiry Has Been Received</p>
+    </div>
+    
+    <div class="content">
+        <p style="font-size: 16px; color: #4b5563;">
+            Thank you for reaching out to <strong>DataToGrow Analytics</strong>. We've received your project inquiry and are excited about the possibility of working with you.
+        </p>
+        
+        <div class="confirmation">
+            <h3 style="color: #1e40af; margin-top: 0;">📋 Inquiry Confirmation</h3>
+            <p style="margin: 10px 0;">
+                We've received your inquiry regarding <span class="highlight">{{subject}}</span> and will review it with our team of senior data analysts.
+            </p>
+            {{#if timeline}}
+            <p style="margin: 10px 0;">
+                Your preferred timeline (<strong>{{timeline}}</strong>) has been noted and we'll prioritize accordingly.
+            </p>
+            {{/if}}
+        </div>
+        
+        <div class="next-steps">
+            <h3 style="color: #1f2937; margin-top: 0;">🚀 What Happens Next?</h3>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div>
+                    <strong>Initial Review</strong>
+                    <p style="margin: 5px 0 0; color: #6b7280; font-size: 14px;">
+                        Our senior analysts will review your project requirements within 24 hours.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div>
+                    <strong>Personalized Response</strong>
+                    <p style="margin: 5px 0 0; color: #6b7280; font-size: 14px;">
+                        You'll receive a detailed email with initial thoughts and potential approaches.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div>
+                    <strong>Discovery Call</strong>
+                    <p style="margin: 5px 0 0; color: #6b7280; font-size: 14px;">
+                        If needed, we'll schedule a free 30-minute consultation to discuss your project in detail.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <div>
+                    <strong>Proposal</strong>
+                    <p style="margin: 5px 0 0; color: #6b7280; font-size: 14px;">
+                        We'll provide a comprehensive proposal including methodology, timeline, and investment.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-info">
+            <h3 style="color: #1f2937; margin-top: 0;">📞 Get in Touch Sooner</h3>
+            <p style="margin: 10px 0;">
+                If you have urgent requirements or would like to schedule a call immediately, please reply to this email or contact us directly:
+            </p>
+            <ul style="margin: 15px 0; padding-left: 20px; color: #4b5563;">
+                <li><strong>Email:</strong> vikram@datatogrow.com</li>
+                <li><strong>Phone:</strong> +1 (555) 123-4567</li>
+                <li><strong>Hours:</strong> Mon-Fri, 9 AM - 6 PM PST</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <p style="font-size: 15px; color: #374151;">
+                <em>"Turning your data into actionable insights for business growth"</em>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p style="margin: 0;">
+                <strong>DataToGrow Analytics</strong><br>
+                Senior Data Analyst | Business Intelligence | Data Strategy
+            </p>
+            <p style="margin: 15px 0 0; font-size: 12px;">
+                This is an automated confirmation. Your inquiry reference: #{{referenceId}}<br>
+                © {{currentYear}} DataToGrow Analytics. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
